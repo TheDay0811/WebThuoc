@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicare - Trang chủ</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-container">
+            <!-- Logo -->
+            <a href="#" class="logo">
+                <img src="assets/images/logo.png" alt="Medicare Icon" class="logo-img"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <!-- Fallback icon if image is missing -->
+                <div class="logo-fallback" style="display: none;">
+                    <i class="fa-solid fa-capsules"></i>
+                </div>
+                <span class="logo-text">MEDICARE</span>
+            </a>
+
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" placeholder="Tìm kiếm thuốc, thương hiệu hoặc triệu chứng...">
+            </div>
+
+            <!-- Header Actions -->
+            <div class="header-actions">
+
+
+                <a href="#" class="action-item cart-item">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="badge">3</span>
+                </a>
+
+                <a href="auth/login.html" class="action-item">
+                    <i class="fa-regular fa-user"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- Danh mục nổi bật -->
+        <section class="section category-section">
+            <div class="container">
+                <h2 class="section-title">Danh mục nổi bật</h2>
+                <div class="category-grid">
+                    <!-- Large Card -->
+                    <a href="#" class="category-card large-card">
+                        <i class="fa-solid fa-capsules card-icon"></i>
+                        <div class="card-content">
+                            <h3 class="card-title">Kê đơn theo toa thuốc</h3>
+                            <p class="card-desc">Giảm đau, hạ sốt, cảm cúm...</p>
+                        </div>
+                        <!-- Decorative large icon -->
+                        <i class="fa-solid fa-capsules bg-icon"></i>
+                    </a>
+
+                    <!-- Small Cards -->
+                    <div class="small-categories">
+                        <a href="#" class="category-card small-card">
+                            <div class="icon-wrapper green-icon">
+                                <i class="fa-solid fa-leaf"></i>
+                            </div>
+                            <span class="card-name">Vitamin & Thực phẩm chức năng</span>
+                        </a>
+                        <a href="#" class="category-card small-card">
+                            <div class="icon-wrapper orange-icon">
+                                <i class="fa-solid fa-hands-bubbles"></i>
+                            </div>
+                            <span class="card-name">Bảo vệ cá nhân</span>
+                        </a>
+                        <a href="#" class="category-card small-card">
+                            <div class="icon-wrapper blue-icon">
+                                <i class="fa-solid fa-briefcase-medical"></i>
+                            </div>
+                            <span class="card-name">Thiết bị y tế</span>
+                        </a>
+                        <a href="#" class="category-card small-card">
+                            <div class="icon-wrapper mint-icon">
+                                <i class="fa-solid fa-pump-medical"></i>
+                            </div>
+                            <span class="card-name">Dược mỹ phẩm</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sản phẩm bán chạy -->
+        <section class="section product-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Sản phẩm bán chạy</h2>
+                    <p class="section-subtitle">Được tin dùng bởi hàng ngàn khách hàng</p>
+                </div>
+
+                <div class="product-grid">
+                    <!-- Product Card 1 -->
+                    <div class="product-card">
+                        <span class="bestseller-badge">BESTSELLER</span>
+                        <div class="product-image">
+                            <!-- Placeholder image -->
+                            <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=300&h=300&fit=crop"
+                                alt="Panadol Extra">
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name">Panadol Extra (Viên sủi)</h3>
+                            <p class="product-desc">Hộp 12 viên</p>
+                            <div class="product-bottom">
+                                <span class="product-price">45.000 VNĐ</span>
+                                <button class="btn-cart"><i class="fa-solid fa-cart-shopping"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Product Card 2 -->
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="https://images.unsplash.com/photo-1550572017-edb1e94119cd?w=300&h=300&fit=crop"
+                                alt="Vitamin C 500mg Plus">
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name">Vitamin C 500mg Plus</h3>
+                            <p class="product-desc">Lọ 100 viên</p>
+                            <div class="product-bottom">
+                                <span class="product-price">120.000 VNĐ</span>
+                                <button class="btn-cart"><i class="fa-solid fa-cart-shopping"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Product Card 3 -->
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=300&h=300&fit=crop"
+                                alt="Fish Oil Omega-3">
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name">Fish Oil Omega-3 1000mg</h3>
+                            <p class="product-desc">Lọ 60 viên</p>
+                            <div class="product-bottom">
+                                <span class="product-price">285.000 VNĐ</span>
+                                <button class="btn-cart"><i class="fa-solid fa-cart-shopping"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Product Card 4 -->
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=300&h=300&fit=crop"
+                                alt="Kem dưỡng ẩm Cerave">
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name">Kem dưỡng ẩm Cerave</h3>
+                            <p class="product-desc">Tuýp 236ml</p>
+                            <div class="product-bottom">
+                                <span class="product-price">350.000 VNĐ</span>
+                                <button class="btn-cart"><i class="fa-solid fa-cart-shopping"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Floating Chat Widget -->
+    <div class="chat-widget" id="chat-widget">
+        <div class="chat-widget-header">
+            <h3><i class="fa-solid fa-user-doctor"></i> Tư vấn trực tuyến</h3>
+            <button class="close-chat" id="close-chat-btn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="chat-widget-body">
+            <div class="chat-area">
+                <div class="chat-message bot-message">
+                    <div class="avatar"><i class="fa-solid fa-user-doctor"></i></div>
+                    <div class="message-bubble">Xin chào! Tôi là bác sĩ tư vấn của Medicare. Tôi có thể giúp gì cho tình
+                        trạng sức khỏe của bạn hôm nay?</div>
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" placeholder="Nhập câu hỏi của bạn tại đây..." id="chat-input">
+                <button class="send-btn" id="send-btn"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Toggle Button -->
+    <button class="chat-fab" id="chat-fab">
+        <img src="assets/icons/stethoscope.png" alt="Chat" class="fab-icon" id="fab-icon-open">
+        <i class="fa-solid fa-xmark" id="fab-icon-close" style="display:none"></i>
+    </button>
+
+    <!-- Script for Chat Widget Toggle -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const widget = document.getElementById('chat-widget');
+            const fab = document.getElementById('chat-fab');
+            const openBtn = document.getElementById('open-consult-btn');
+            const closeBtn = document.getElementById('close-chat-btn');
+            const iconOpen = document.getElementById('fab-icon-open');
+            const iconClose = document.getElementById('fab-icon-close');
+            const chatInput = document.getElementById('chat-input');
+            const sendBtn = document.getElementById('send-btn');
+            const chatArea = widget.querySelector('.chat-area');
+
+            function toggleChat() {
+                const isOpen = widget.classList.toggle('active');
+                iconOpen.style.display = isOpen ? 'none' : '';
+                iconClose.style.display = isOpen ? '' : 'none';
+                fab.classList.toggle('active', isOpen);
+                if (isOpen) chatInput.focus();
+            }
+
+            fab.addEventListener('click', toggleChat);
+
+            openBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (!widget.classList.contains('active')) toggleChat();
+            });
+
+            closeBtn.addEventListener('click', () => {
+                if (widget.classList.contains('active')) toggleChat();
+            });
+
+            // Simple send message demo
+            function sendMessage() {
+                const text = chatInput.value.trim();
+                if (!text) return;
+                // User message
+                const userMsg = document.createElement('div');
+                userMsg.className = 'chat-message user-message';
+                userMsg.innerHTML = '<div class="message-bubble user-bubble">' + text + '</div>';
+                chatArea.appendChild(userMsg);
+                chatInput.value = '';
+                chatArea.scrollTop = chatArea.scrollHeight;
+
+                // Simulated bot reply
+                setTimeout(() => {
+                    const botMsg = document.createElement('div');
+                    botMsg.className = 'chat-message bot-message';
+                    botMsg.innerHTML = '<div class="avatar"><i class="fa-solid fa-user-doctor"></i></div><div class="message-bubble">Cảm ơn bạn đã chia sẻ. Bác sĩ sẽ phản hồi trong giây lát.</div>';
+                    chatArea.appendChild(botMsg);
+                    chatArea.scrollTop = chatArea.scrollHeight;
+                }, 800);
+            }
+
+            sendBtn.addEventListener('click', sendMessage);
+            chatInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') sendMessage();
+            });
+        });
+    </script>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-container">
+            <a href="#" class="logo footer-logo">
+                <img src="assets/images/logo.png" alt="Medicare Icon" class="logo-img"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="logo-fallback" style="display: none;">
+                    <i class="fa-solid fa-capsules"></i>
+                </div>
+                <span class="logo-text">MEDICARE</span>
+            </a>
+            <p class="footer-text">
+                Hệ thống nhà thuốc hàng đầu Việt Nam, cam kết mang lại giải pháp chăm sóc sức khỏe tốt nhất cho cộng
+                đồng.
+            </p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

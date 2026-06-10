@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Chat bubble -->
+  <path d="M48 8H16C11.58 8 8 11.58 8 16v20c0 4.42 3.58 8 8 8h4v10l12-10h16c4.42 0 8-3.58 8-8V16c0-4.42-3.58-8-8-8z" fill="white"/>
+  <!-- Plus sign -->
+  <rect x="28" y="18" width="8" height="20" rx="3" fill="white" stroke="white" stroke-width="0"/>
+  <rect x="22" y="24" width="20" height="8" rx="3" fill="white" stroke="white" stroke-width="0"/>
+  <!-- Redraw plus in the bubble color context -->
+  <path d="M48 8H16C11.58 8 8 11.58 8 16v20c0 4.42 3.58 8 8 8h4v10l12-10h16c4.42 0 8-3.58 8-8V16c0-4.42-3.58-8-8-8z" fill="white"/>
+  <path d="M35 19h-6a2 2 0 0 0-2 2v4h-4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h4v4a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-4h4a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-4v-4a2 2 0 0 0-2-2z" fill="currentColor" opacity="0.9"/>
+</svg>
