@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicare - Tài khoản của tôi</title>
+    <meta name="description" content="Quản lý tài khoản và xem lịch sử giao dịch tại Medicare - Nhà thuốc trực tuyến hàng đầu Việt Nam">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="user.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-container">
+            <a href="../index.html" class="logo">
+                <img src="../assets/images/logo.png" alt="Medicare Icon" class="logo-img"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="logo-fallback" style="display: none;">
+                    <i class="fa-solid fa-capsules"></i>
+                </div>
+                <span class="logo-text">MEDICARE</span>
+            </a>
+
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" placeholder="Tìm kiếm thuốc, thương hiệu hoặc triệu chứng...">
+            </div>
+
+            <div class="header-actions">
+                <a href="#" class="action-item cart-item">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="badge">3</span>
+                </a>
+                <a href="profile.html" class="action-item active-user">
+                    <i class="fa-solid fa-user"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="user-main">
+        <div class="container">
+
+            <!-- Page Title -->
+            <div class="page-title-bar">
+                <div class="page-title-left">
+                    <h1 class="page-title">Tài khoản của tôi</h1>
+                    <p class="page-subtitle">Quản lý thông tin cá nhân và theo dõi đơn hàng</p>
+                </div>
+                <a href="../auth/login.html" class="btn-logout" id="btn-logout">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    Đăng xuất
+                </a>
+            </div>
+
+            <!-- Profile Layout -->
+            <div class="profile-layout">
+
+                <!-- Sidebar -->
+                <aside class="profile-sidebar">
+                    <div class="user-avatar-section">
+                        <div class="user-avatar" id="user-avatar">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <h2 class="user-display-name" id="user-display-name">Nguyễn Văn A</h2>
+                        <span class="user-member-tag"><i class="fa-solid fa-crown"></i> Thành viên Vàng</span>
+                    </div>
+
+                    <nav class="sidebar-nav">
+                        <a href="#" class="sidebar-link active" data-tab="profile-tab" id="nav-profile">
+                            <i class="fa-solid fa-user-pen"></i>
+                            Thông tin cá nhân
+                        </a>
+                        <a href="#" class="sidebar-link" data-tab="orders-tab" id="nav-orders">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                            Lịch sử giao dịch
+                            <span class="nav-badge">12</span>
+                        </a>
+                        <a href="#" class="sidebar-link" data-tab="addresses-tab" id="nav-addresses">
+                            <i class="fa-solid fa-location-dot"></i>
+                            Sổ địa chỉ
+                        </a>
+                        <a href="#" class="sidebar-link" data-tab="settings-tab" id="nav-settings">
+                            <i class="fa-solid fa-gear"></i>
+                            Cài đặt
+                        </a>
+                    </nav>
+
+                    <!-- Quick Stats -->
+                    <div class="quick-stats">
+                        <div class="stat-item">
+                            <span class="stat-value" id="stat-orders">12</span>
+                            <span class="stat-label">Đơn hàng</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="stat-points">2.450</span>
+                            <span class="stat-label">Điểm tích luỹ</span>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Main Content Area -->
+                <div class="profile-content">
+
+                    <!-- Tab: Thông tin cá nhân -->
+                    <section class="tab-panel active" id="profile-tab">
+                        <div class="panel-card">
+                            <div class="panel-header">
+                                <h2 class="panel-title"><i class="fa-solid fa-user-pen"></i> Thông tin cá nhân</h2>
+                                <button class="btn-edit" id="btn-edit-profile"><i class="fa-solid fa-pen-to-square"></i> Chỉnh sửa</button>
+                            </div>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <span class="info-label">Họ và tên</span>
+                                    <span class="info-value" id="info-name">Nguyễn Văn A</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Email</span>
+                                    <span class="info-value" id="info-email">nguyenvana@gmail.com</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Số điện thoại</span>
+                                    <span class="info-value" id="info-phone">0912 345 678</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Ngày sinh</span>
+                                    <span class="info-value" id="info-dob">15/03/1995</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Giới tính</span>
+                                    <span class="info-value" id="info-gender">Nam</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Địa chỉ mặc định</span>
+                                    <span class="info-value" id="info-address">123 Nguyễn Huệ, Quận 1, TP.HCM</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Tab: Lịch sử giao dịch -->
+                    <section class="tab-panel" id="orders-tab">
+                        <div class="panel-card">
+                            <div class="panel-header">
+                                <h2 class="panel-title"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử giao dịch</h2>
+                            </div>
+
+                            <!-- Order Stats Summary -->
+                            <div class="order-stats-row">
+                                <div class="order-stat-card stat-all">
+                                    <div class="order-stat-icon"><i class="fa-solid fa-box"></i></div>
+                                    <div class="order-stat-info">
+                                        <span class="order-stat-number" id="total-orders">12</span>
+                                        <span class="order-stat-text">Tổng đơn hàng</span>
+                                    </div>
+                                </div>
+                                <div class="order-stat-card stat-delivered">
+                                    <div class="order-stat-icon"><i class="fa-solid fa-circle-check"></i></div>
+                                    <div class="order-stat-info">
+                                        <span class="order-stat-number" id="completed-orders">8</span>
+                                        <span class="order-stat-text">Đã giao</span>
+                                    </div>
+                                </div>
+                                <div class="order-stat-card stat-shipping">
+                                    <div class="order-stat-icon"><i class="fa-solid fa-truck"></i></div>
+                                    <div class="order-stat-info">
+                                        <span class="order-stat-number" id="shipping-orders">2</span>
+                                        <span class="order-stat-text">Đang giao</span>
+                                    </div>
+                                </div>
+                                <div class="order-stat-card stat-cancelled">
+                                    <div class="order-stat-icon"><i class="fa-solid fa-xmark"></i></div>
+                                    <div class="order-stat-info">
+                                        <span class="order-stat-number" id="cancelled-orders">2</span>
+                                        <span class="order-stat-text">Đã huỷ</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Filters -->
+                            <div class="order-filters">
+                                <div class="filter-tabs" id="filter-tabs">
+                                    <button class="filter-tab active" data-filter="all">Tất cả</button>
+                                    <button class="filter-tab" data-filter="pending">Chờ xác nhận</button>
+                                    <button class="filter-tab" data-filter="confirmed">Đã xác nhận</button>
+                                    <button class="filter-tab" data-filter="shipping">Đang giao</button>
+                                    <button class="filter-tab" data-filter="delivered">Đã giao</button>
+                                    <button class="filter-tab" data-filter="cancelled">Đã huỷ</button>
+                                </div>
+                                <div class="filter-search">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                    <input type="text" placeholder="Tìm theo mã đơn hàng..." id="order-search-input">
+                                </div>
+                            </div>
+
+                            <!-- Order List -->
+                            <div class="order-list" id="order-list">
+
+                                <!-- Order Item 1 -->
+                                <div class="order-item" data-status="delivered" data-id="MC240610001">
+                                    <div class="order-item-header">
+                                        <div class="order-id-group">
+                                            <span class="order-id">#MC240610001</span>
+                                            <span class="order-date"><i class="fa-regular fa-calendar"></i> 10/06/2026</span>
+                                        </div>
+                                        <span class="order-status status-delivered"><i class="fa-solid fa-circle-check"></i> Đã giao</span>
+                                    </div>
+                                    <div class="order-item-body">
+                                        <div class="order-products">
+                                            <div class="order-product-thumb">
+                                                <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=80&h=80&fit=crop" alt="Panadol Extra">
+                                            </div>
+                                            <div class="order-product-info">
+                                                <span class="order-product-name">Panadol Extra (Viên sủi) x2</span>
+                                                <span class="order-product-more">+1 sản phẩm khác</span>
+                                            </div>
+                                        </div>
+                                        <div class="order-total">
+                                            <span class="order-total-label">Tổng tiền:</span>
+                                            <span class="order-total-value">235.000 VNĐ</span>
+                                        </div>
+                                    </div>
+                                    <div class="order-item-footer">
+                                        <button class="btn-order-detail" data-order="MC240610001"><i class="fa-solid fa-eye"></i> Xem chi tiết</button>
+                                        <button class="btn-reorder"><i class="fa-solid fa-rotate"></i> Mua lại</button>
+                                    </div>
+                                </div>
+
+                                <!-- Order Item 2 -->
+                                <div class="order-item" data-status="shipping" data-id="MC240608002">
+                                    <div class="order-item-header">
+                                        <div class="order-id-group">
+                                            <span class="order-id">#MC240608002</span>
+                                            <span class="order-date"><i class="fa-regular fa-calendar"></i> 08/06/2026</span>
+                                        </div>
+                                        <span class="order-status status-shipping"><i class="fa-solid fa-truck"></i> Đang giao</span>
+                                    </div>
+                                    <div class="order-item-body">
+                                        <div class="order-products">
+                                            <div class="order-product-thumb">
+                                                <img src="https://images.unsplash.com/photo-1550572017-edb1e94119cd?w=80&h=80&fit=crop" alt="Vitamin C">
+                                            </div>
+                                            <div class="order-product-info">
+                                                <span class="order-product-name">Vitamin C 500mg Plus x1</span>
+                                                <span class="order-product-more">+2 sản phẩm khác</span>
+                                            </div>
+                                        </div>
+                                        <div class="order-total">
+                                            <span class="order-total-label">Tổng tiền:</span>
+                                            <span class="order-total-value">520.000 VNĐ</span>
+                                        </div>
+                                    </div>
+                                    <div class="order-item-footer">
+                                        <button class="btn-order-detail" data-order="MC240608002"><i class="fa-solid fa-eye"></i> Xem chi tiết</button>
+                                        <button class="btn-track-order"><i class="fa-solid fa-location-dot"></i> Theo dõi</button>
+                                    </div>
+                                </div>
+
+                                <!-- Order Item 3 -->
+                                <div class="order-item" data-status="confirmed" data-id="MC240607003">
+                                    <div class="order-item-header">
+                                        <div class="order-id-group">
+                                            <span class="order-id">#MC240607003</span>
+                                            <span class="order-date"><i class="fa-regular fa-calendar"></i> 07/06/2026</span>
+                                        </div>
+                                        <span class="order-status status-confirmed"><i class="fa-solid fa-clipboard-check"></i> Đã xác nhận</span>
+                                    </div>
+                                    <div class="order-item-body">
+                                        <div class="order-products">
+                                            <div class="order-product-thumb">
+                                                <img src="https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=80&h=80&fit=crop" alt="Fish Oil">
+                                            </div>
+                                            <div class="order-product-info">
+                                                <span class="order-product-name">Fish Oil Omega-3 1000mg x1</span>
+                                            </div>
+                                        </div>
+                                        <div class="order-total">
+                                            <span class="order-total-label">Tổng tiền:</span>
+                                            <span class="order-total-value">285.000 VNĐ</span>
+                                        </div>
+                                    </div>
+                                    <div class="order-item-footer">
+                                        <button class="btn-order-detail" data-order="MC240607003"><i class="fa-solid fa-eye"></i> Xem chi tiết</button>
+                                    </div>
+                                </div>
+
+                                <!-- Order Item 4 -->
+                                <div class="order-item" data-status="pending" data-id="MC240606004">
+                                    <div class="order-item-header">
+                                        <div class="order-id-group">
+                                            <span class="order-id">#MC240606004</span>
+                                            <span class="order-date"><i class="fa-regular fa-calendar"></i> 06/06/2026</span>
+                                        </div>
+                                        <span class="order-status status-pending"><i class="fa-solid fa-hourglass-half"></i> Chờ xác nhận</span>
+                                    </div>
+                                    <div class="order-item-body">
+                                        <div class="order-products">
+                                            <div class="order-product-thumb">
+                                                <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=80&h=80&fit=crop" alt="Cerave">
+                                            </div>
+                                            <div class="order-product-info">
+                                                <span class="order-product-name">Kem dưỡng ẩm Cerave x1</span>
+                                                <span class="order-product-more">+3 sản phẩm khác</span>
+                                            </div>
+                                        </div>
+                                        <div class="order-total">
+                                            <span class="order-total-label">Tổng tiền:</span>
+                                            <span class="order-total-value">890.000 VNĐ</span>
+                                        </div>
+                                    </div>
+                                    <div class="order-item-footer">
+                                        <button class="btn-order-detail" data-order="MC240606004"><i class="fa-solid fa-eye"></i> Xem chi tiết</button>
+                                        <button class="btn-cancel-order"><i class="fa-solid fa-ban"></i> Huỷ đơn</button>
+                                    </div>
+                                </div>
+
+                                <!-- Order Item 5 -->
+                                <div class="order-item" data-status="delivered" data-id="MC240601005">
+                                    <div class="order-item-header">
+                                        <div class="order-id-group">
+                                            <span class="order-id">#MC240601005</span>
+                                            <span class="order-date"><i class="fa-regular fa-calendar"></i> 01/06/2026</span>
+                                        </div>
+                                        <span class="order-status status-delivered"><i class="fa-solid fa-circle-check"></i> Đã giao</span>
+                                    </div>
+                                    <div class="order-item-body">
+                                        <div class="order-products">
+                                            <div class="order-product-thumb">
+                                                <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=80&h=80&fit=crop" alt="Panadol">
+                                            </div>
+                                            <div class="order-product-info">
+                                                <span class="order-product-name">Panadol Extra (Viên sủi) x3</span>
+                                                <span class="order-product-more">+1 sản phẩm khác</span>
+                                            </div>
+                                        </div>
+                                        <div class="order-total">
+                                            <span class="order-total-label">Tổng tiền:</span>
+                                            <span class="order-total-value">175.000 VNĐ</span>
+                                        </div>
+                                    </div>
+                                    <div class="order-item-footer">
+                                        <button class="btn-order-detail" data-order="MC240601005"><i class="fa-solid fa-eye"></i> Xem chi tiết</button>
+                                        <button class="btn-reorder"><i class="fa-solid fa-rotate"></i> Mua lại</button>
+                                    </div>
+                                </div>
+
+                                <!-- Order Item 6 -->
+                                <div class="order-item" data-status="cancelled" data-id="MC240528006">
+                                    <div class="order-item-header">
+                                        <div class="order-id-group">
+                                            <span class="order-id">#MC240528006</span>
+                                            <span class="order-date"><i class="fa-regular fa-calendar"></i> 28/05/2026</span>
+                                        </div>
+                                        <span class="order-status status-cancelled"><i class="fa-solid fa-xmark"></i> Đã huỷ</span>
+                                    </div>
+                                    <div class="order-item-body">
+                                        <div class="order-products">
+                                            <div class="order-product-thumb">
+                                                <img src="https://images.unsplash.com/photo-1550572017-edb1e94119cd?w=80&h=80&fit=crop" alt="Vitamin">
+                                            </div>
+                                            <div class="order-product-info">
+                                                <span class="order-product-name">Vitamin C 500mg Plus x2</span>
+                                            </div>
+                                        </div>
+                                        <div class="order-total">
+                                            <span class="order-total-label">Tổng tiền:</span>
+                                            <span class="order-total-value">240.000 VNĐ</span>
+                                        </div>
+                                    </div>
+                                    <div class="order-item-footer">
+                                        <button class="btn-order-detail" data-order="MC240528006"><i class="fa-solid fa-eye"></i> Xem chi tiết</button>
+                                        <button class="btn-reorder"><i class="fa-solid fa-rotate"></i> Mua lại</button>
+                                    </div>
+                                </div>
+
+                                <!-- Order Item 7 -->
+                                <div class="order-item" data-status="delivered" data-id="MC240520007">
+                                    <div class="order-item-header">
+                                        <div class="order-id-group">
+                                            <span class="order-id">#MC240520007</span>
+                                            <span class="order-date"><i class="fa-regular fa-calendar"></i> 20/05/2026</span>
+                                        </div>
+                                        <span class="order-status status-delivered"><i class="fa-solid fa-circle-check"></i> Đã giao</span>
+                                    </div>
+                                    <div class="order-item-body">
+                                        <div class="order-products">
+                                            <div class="order-product-thumb">
+                                                <img src="https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=80&h=80&fit=crop" alt="Fish Oil">
+                                            </div>
+                                            <div class="order-product-info">
+                                                <span class="order-product-name">Fish Oil Omega-3 1000mg x2</span>
+                                                <span class="order-product-more">+4 sản phẩm khác</span>
+                                            </div>
+                                        </div>
+                                        <div class="order-total">
+                                            <span class="order-total-label">Tổng tiền:</span>
+                                            <span class="order-total-value">1.250.000 VNĐ</span>
+                                        </div>
+                                    </div>
+                                    <div class="order-item-footer">
+                                        <button class="btn-order-detail" data-order="MC240520007"><i class="fa-solid fa-eye"></i> Xem chi tiết</button>
+                                        <button class="btn-reorder"><i class="fa-solid fa-rotate"></i> Mua lại</button>
+                                    </div>
+                                </div>
+
+                                <!-- Order Item 8 -->
+                                <div class="order-item" data-status="shipping" data-id="MC240609008">
+                                    <div class="order-item-header">
+                                        <div class="order-id-group">
+                                            <span class="order-id">#MC240609008</span>
+                                            <span class="order-date"><i class="fa-regular fa-calendar"></i> 09/06/2026</span>
+                                        </div>
+                                        <span class="order-status status-shipping"><i class="fa-solid fa-truck"></i> Đang giao</span>
+                                    </div>
+                                    <div class="order-item-body">
+                                        <div class="order-products">
+                                            <div class="order-product-thumb">
+                                                <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=80&h=80&fit=crop" alt="Cerave">
+                                            </div>
+                                            <div class="order-product-info">
+                                                <span class="order-product-name">Kem dưỡng ẩm Cerave x2</span>
+                                            </div>
+                                        </div>
+                                        <div class="order-total">
+                                            <span class="order-total-label">Tổng tiền:</span>
+                                            <span class="order-total-value">700.000 VNĐ</span>
+                                        </div>
+                                    </div>
+                                    <div class="order-item-footer">
+                                        <button class="btn-order-detail" data-order="MC240609008"><i class="fa-solid fa-eye"></i> Xem chi tiết</button>
+                                        <button class="btn-track-order"><i class="fa-solid fa-location-dot"></i> Theo dõi</button>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- Empty state -->
+                            <div class="order-empty" id="order-empty" style="display: none;">
+                                <i class="fa-solid fa-box-open"></i>
+                                <p>Không tìm thấy đơn hàng nào</p>
+                            </div>
+
+                        </div>
+                    </section>
+
+                    <!-- Tab: Sổ địa chỉ (placeholder) -->
+                    <section class="tab-panel" id="addresses-tab">
+                        <div class="panel-card">
+                            <div class="panel-header">
+                                <h2 class="panel-title"><i class="fa-solid fa-location-dot"></i> Sổ địa chỉ</h2>
+                                <button class="btn-edit"><i class="fa-solid fa-plus"></i> Thêm địa chỉ</button>
+                            </div>
+                            <div class="address-list">
+                                <div class="address-card default-address">
+                                    <div class="address-tag"><i class="fa-solid fa-house"></i> Nhà riêng <span class="default-tag">Mặc định</span></div>
+                                    <p class="address-name">Nguyễn Văn A</p>
+                                    <p class="address-phone">0912 345 678</p>
+                                    <p class="address-detail">123 Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh</p>
+                                </div>
+                                <div class="address-card">
+                                    <div class="address-tag"><i class="fa-solid fa-building"></i> Công ty</div>
+                                    <p class="address-name">Nguyễn Văn A</p>
+                                    <p class="address-phone">0912 345 678</p>
+                                    <p class="address-detail">456 Lê Lợi, Phường Bến Thành, Quận 1, TP. Hồ Chí Minh</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Tab: Cài đặt (placeholder) -->
+                    <section class="tab-panel" id="settings-tab">
+                        <div class="panel-card">
+                            <div class="panel-header">
+                                <h2 class="panel-title"><i class="fa-solid fa-gear"></i> Cài đặt</h2>
+                            </div>
+                            <div class="settings-list">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <span class="setting-name">Nhận thông báo khuyến mãi</span>
+                                        <span class="setting-desc">Nhận email về các chương trình ưu đãi mới nhất</span>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <span class="setting-name">Thông báo đơn hàng</span>
+                                        <span class="setting-desc">Nhận thông báo khi đơn hàng được cập nhật trạng thái</span>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <span class="setting-name">Đổi mật khẩu</span>
+                                        <span class="setting-desc">Cập nhật mật khẩu để bảo vệ tài khoản</span>
+                                    </div>
+                                    <button class="btn-edit"><i class="fa-solid fa-key"></i> Đổi</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Order Detail Modal -->
+    <div class="modal-overlay" id="order-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Chi tiết đơn hàng <span id="modal-order-id">#MC240610001</span></h3>
+                <button class="modal-close" id="modal-close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <!-- Order Timeline -->
+                <div class="order-timeline">
+                    <div class="timeline-step completed">
+                        <div class="timeline-dot"><i class="fa-solid fa-check"></i></div>
+                        <div class="timeline-info">
+                            <span class="timeline-title">Đặt hàng</span>
+                            <span class="timeline-date">10/06/2026 - 08:30</span>
+                        </div>
+                    </div>
+                    <div class="timeline-step completed">
+                        <div class="timeline-dot"><i class="fa-solid fa-check"></i></div>
+                        <div class="timeline-info">
+                            <span class="timeline-title">Đã xác nhận</span>
+                            <span class="timeline-date">10/06/2026 - 09:15</span>
+                        </div>
+                    </div>
+                    <div class="timeline-step completed">
+                        <div class="timeline-dot"><i class="fa-solid fa-check"></i></div>
+                        <div class="timeline-info">
+                            <span class="timeline-title">Đang giao hàng</span>
+                            <span class="timeline-date">10/06/2026 - 14:00</span>
+                        </div>
+                    </div>
+                    <div class="timeline-step completed">
+                        <div class="timeline-dot"><i class="fa-solid fa-check"></i></div>
+                        <div class="timeline-info">
+                            <span class="timeline-title">Đã giao thành công</span>
+                            <span class="timeline-date">10/06/2026 - 16:45</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Products -->
+                <div class="modal-section">
+                    <h4 class="modal-section-title">Sản phẩm đã mua</h4>
+                    <div class="modal-product-list">
+                        <div class="modal-product">
+                            <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=60&h=60&fit=crop" alt="Panadol">
+                            <div class="modal-product-info">
+                                <span class="modal-product-name">Panadol Extra (Viên sủi)</span>
+                                <span class="modal-product-qty">x2</span>
+                            </div>
+                            <span class="modal-product-price">90.000 VNĐ</span>
+                        </div>
+                        <div class="modal-product">
+                            <img src="https://images.unsplash.com/photo-1550572017-edb1e94119cd?w=60&h=60&fit=crop" alt="Vitamin C">
+                            <div class="modal-product-info">
+                                <span class="modal-product-name">Vitamin C 500mg Plus</span>
+                                <span class="modal-product-qty">x1</span>
+                            </div>
+                            <span class="modal-product-price">120.000 VNĐ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Summary -->
+                <div class="modal-section">
+                    <h4 class="modal-section-title">Thanh toán</h4>
+                    <div class="payment-summary">
+                        <div class="payment-row">
+                            <span>Tạm tính</span>
+                            <span>210.000 VNĐ</span>
+                        </div>
+                        <div class="payment-row">
+                            <span>Phí vận chuyển</span>
+                            <span>25.000 VNĐ</span>
+                        </div>
+                        <div class="payment-row discount">
+                            <span>Giảm giá</span>
+                            <span>-0 VNĐ</span>
+                        </div>
+                        <div class="payment-row total">
+                            <span>Tổng cộng</span>
+                            <span>235.000 VNĐ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Delivery Info -->
+                <div class="modal-section">
+                    <h4 class="modal-section-title">Địa chỉ giao hàng</h4>
+                    <div class="delivery-info">
+                        <p><strong>Nguyễn Văn A</strong> | 0912 345 678</p>
+                        <p>123 Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-container">
+            <a href="../index.html" class="logo footer-logo">
+                <img src="../assets/images/logo.png" alt="Medicare Icon" class="logo-img"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="logo-fallback" style="display: none;">
+                    <i class="fa-solid fa-capsules"></i>
+                </div>
+                <span class="logo-text">MEDICARE</span>
+            </a>
+            <p class="footer-text">
+                Hệ thống nhà thuốc hàng đầu Việt Nam, cam kết mang lại giải pháp chăm sóc sức khỏe tốt nhất cho cộng đồng.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // ===== Tab Navigation =====
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+            const tabPanels = document.querySelectorAll('.tab-panel');
+
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetTab = link.dataset.tab;
+
+                    sidebarLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+
+                    tabPanels.forEach(panel => {
+                        panel.classList.remove('active');
+                        if (panel.id === targetTab) {
+                            panel.classList.add('active');
+                        }
+                    });
+                });
+            });
+
+            // ===== Order Filter Tabs =====
+            const filterTabs = document.querySelectorAll('.filter-tab');
+            const orderItems = document.querySelectorAll('.order-item');
+            const orderEmpty = document.getElementById('order-empty');
+
+            filterTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    filterTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    const filter = tab.dataset.filter;
+                    filterOrders(filter);
+                });
+            });
+
+            function filterOrders(status) {
+                let visibleCount = 0;
+                const searchTerm = document.getElementById('order-search-input').value.trim().toLowerCase();
+
+                orderItems.forEach(item => {
+                    const itemStatus = item.dataset.status;
+                    const itemId = item.dataset.id.toLowerCase();
+                    const matchesStatus = status === 'all' || itemStatus === status;
+                    const matchesSearch = !searchTerm || itemId.includes(searchTerm);
+
+                    if (matchesStatus && matchesSearch) {
+                        item.style.display = '';
+                        visibleCount++;
+                        // stagger animation
+                        item.style.animation = 'none';
+                        item.offsetHeight; // trigger reflow
+                        item.style.animation = `fadeSlideIn 0.4s ease ${visibleCount * 0.05}s both`;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                orderEmpty.style.display = visibleCount === 0 ? 'flex' : 'none';
+            }
+
+            // ===== Order Search =====
+            const orderSearch = document.getElementById('order-search-input');
+            orderSearch.addEventListener('input', () => {
+                const activeFilter = document.querySelector('.filter-tab.active').dataset.filter;
+                filterOrders(activeFilter);
+            });
+
+            // ===== Modal =====
+            const modal = document.getElementById('order-modal');
+            const modalClose = document.getElementById('modal-close');
+            const modalOrderId = document.getElementById('modal-order-id');
+
+            document.querySelectorAll('.btn-order-detail').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const orderId = btn.dataset.order;
+                    modalOrderId.textContent = '#' + orderId;
+                    modal.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+
+            modalClose.addEventListener('click', () => {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+
+            // ===== Active user icon highlight =====
+            const activeUser = document.querySelector('.active-user');
+            if (activeUser) {
+                activeUser.style.color = '#0d6efd';
+            }
+        });
+    </script>
+
+</body>
+
+</html>

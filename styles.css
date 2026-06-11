@@ -439,6 +439,80 @@ a {
     background-color: #0b5ed7;
 }
 
+/* New & Hot Badges */
+.new-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background-color: #0d6efd;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 4px;
+    z-index: 2;
+}
+
+.hot-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 4px;
+    z-index: 2;
+}
+
+/* Section View All Button */
+.section-viewall {
+    text-align: center;
+    margin-top: 28px;
+}
+
+.btn-viewall {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 32px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #0d6efd;
+    background-color: #eff6ff;
+    border: 1px solid #bfdbfe;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-viewall:hover {
+    background-color: #0d6efd;
+    color: white;
+    border-color: #0d6efd;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+}
+
+.btn-viewall i {
+    font-size: 12px;
+    transition: transform 0.3s ease;
+}
+
+.btn-viewall:hover i {
+    transform: translateX(4px);
+}
+
+/* Alternating Section Backgrounds */
+.product-section:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+.product-section:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
 /* Floating Chat Widget */
 .chat-widget {
     position: fixed;
