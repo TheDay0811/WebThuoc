@@ -505,7 +505,7 @@
                                         <span class="setting-name">Đổi mật khẩu</span>
                                         <span class="setting-desc">Cập nhật mật khẩu để bảo vệ tài khoản</span>
                                     </div>
-                                    <button class="btn-edit"><i class="fa-solid fa-key"></i> Đổi</button>
+                                    <button class="btn-edit" id="btn-change-password"><i class="fa-solid fa-key"></i> Đổi</button>
                                 </div>
                             </div>
                         </div>
@@ -615,6 +615,76 @@
         </div>
     </div>
 
+    <!-- Edit Profile Modal -->
+    <div class="modal-overlay" id="edit-profile-modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Chỉnh sửa thông tin</h3>
+                <button class="modal-close" id="edit-modal-close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-edit-profile">
+                    <div style="margin-bottom: 16px;">
+                        <label style="display:block; margin-bottom:6px; font-size:13px; font-weight:600; color:#374151;">Họ và Tên</label>
+                        <input type="text" id="edit-fullname" style="width:100%; padding:10px 14px; border:1px solid #d1d5db; border-radius:8px; outline:none;" required>
+                    </div>
+                    <div style="margin-bottom: 16px;">
+                        <label style="display:block; margin-bottom:6px; font-size:13px; font-weight:600; color:#374151;">Số điện thoại</label>
+                        <input type="text" id="edit-phone" style="width:100%; padding:10px 14px; border:1px solid #d1d5db; border-radius:8px; outline:none;">
+                    </div>
+                    <div style="margin-bottom: 16px; display:flex; gap:16px;">
+                        <div style="flex:1;">
+                            <label style="display:block; margin-bottom:6px; font-size:13px; font-weight:600; color:#374151;">Ngày sinh</label>
+                            <input type="date" id="edit-dob" style="width:100%; padding:10px 14px; border:1px solid #d1d5db; border-radius:8px; outline:none;">
+                        </div>
+                        <div style="flex:1;">
+                            <label style="display:block; margin-bottom:6px; font-size:13px; font-weight:600; color:#374151;">Giới tính</label>
+                            <select id="edit-gender" style="width:100%; padding:10px 14px; border:1px solid #d1d5db; border-radius:8px; outline:none;">
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" style="width:100%; padding:12px; background:#0d6efd; color:white; border:none; border-radius:8px; font-weight:600; cursor:pointer; margin-top:10px;">Lưu thay đổi</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal-overlay" id="change-password-modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Đổi mật khẩu</h3>
+                <button class="modal-close" id="password-modal-close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-change-password">
+                    <div style="margin-bottom: 16px;">
+                        <label style="display:block; margin-bottom:6px; font-size:13px; font-weight:600; color:#374151;">Mật khẩu hiện tại</label>
+                        <input type="password" id="old-password" style="width:100%; padding:10px 14px; border:1px solid #d1d5db; border-radius:8px; outline:none;" required>
+                    </div>
+                    <div style="margin-bottom: 16px;">
+                        <label style="display:block; margin-bottom:6px; font-size:13px; font-weight:600; color:#374151;">Mật khẩu mới</label>
+                        <input type="password" id="new-password" style="width:100%; padding:10px 14px; border:1px solid #d1d5db; border-radius:8px; outline:none;" required>
+                    </div>
+                    <div style="margin-bottom: 16px;">
+                        <label style="display:block; margin-bottom:6px; font-size:13px; font-weight:600; color:#374151;">Xác nhận mật khẩu mới</label>
+                        <input type="password" id="confirm-new-password" style="width:100%; padding:10px 14px; border:1px solid #d1d5db; border-radius:8px; outline:none;" required>
+                    </div>
+                    <button type="submit" style="width:100%; padding:12px; background:#0d6efd; color:white; border:none; border-radius:8px; font-weight:600; cursor:pointer; margin-top:10px;">Cập nhật mật khẩu</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="auth-toast" id="user-toast" style="position:fixed; top:24px; right:24px; padding:14px 24px; border-radius:12px; color:white; font-size:14px; font-weight:500; display:flex; align-items:center; gap:10px; z-index:2000; box-shadow:0 8px 25px rgba(0,0,0,0.25); transform:translateX(120%); transition:transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="user-toast-msg">Thành công!</span>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container footer-container">
@@ -635,6 +705,179 @@
     <!-- Script -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+
+            // ===== HELPERS =====
+            function showToast(msg, type = 'success') {
+                const toast = document.getElementById('user-toast');
+                const toastMsg = document.getElementById('user-toast-msg');
+                const icon = toast.querySelector('i');
+                
+                toast.style.background = type === 'success' ? 'linear-gradient(135deg, #059669, #10b981)' : 'linear-gradient(135deg, #dc2626, #ef4444)';
+                icon.className = type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark';
+                toastMsg.textContent = msg;
+                
+                toast.style.transform = 'translateX(0)';
+                setTimeout(() => toast.style.transform = 'translateX(120%)', 3000);
+            }
+
+            function getUsers() {
+                return JSON.parse(localStorage.getItem('medicare_users') || '[]');
+            }
+
+            function saveUsers(users) {
+                localStorage.setItem('medicare_users', JSON.stringify(users));
+            }
+
+            // ===== LOAD USER DATA =====
+            let currentUser = JSON.parse(localStorage.getItem('medicare_current_user') || 'null');
+            
+            if (!currentUser) {
+                // Redirect if not logged in
+                window.location.href = '../auth/login.html';
+                return;
+            }
+
+            function renderUserInfo() {
+                // Sidebar
+                const firstName = currentUser.fullname.split(' ').pop();
+                document.getElementById('user-display-name').textContent = currentUser.fullname;
+                
+                const providerColor = currentUser.provider === 'google' ? '#4285F4' 
+                                    : currentUser.provider === 'facebook' ? '#1877F2' 
+                                    : '#0d6efd';
+                
+                const avatarUrl = currentUser.avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(currentUser.fullname) + '&background=0d6efd&color=fff&size=128';
+                
+                document.getElementById('user-avatar').innerHTML = `<img src="${avatarUrl}" style="width:100%; height:100%; border-radius:50%; object-fit:cover; border:2px solid ${providerColor}">`;
+
+                // Profile Tab Info
+                document.getElementById('info-name').textContent = currentUser.fullname;
+                document.getElementById('info-email').textContent = currentUser.email;
+                document.getElementById('info-phone').textContent = currentUser.phone || 'Chưa cập nhật';
+                
+                if (currentUser.dob) {
+                    const d = new Date(currentUser.dob);
+                    document.getElementById('info-dob').textContent = d.toLocaleDateString('vi-VN');
+                } else {
+                    document.getElementById('info-dob').textContent = 'Chưa cập nhật';
+                }
+                
+                document.getElementById('info-gender').textContent = currentUser.gender || 'Chưa cập nhật';
+
+                // Pre-fill Edit form
+                document.getElementById('edit-fullname').value = currentUser.fullname;
+                document.getElementById('edit-phone').value = currentUser.phone || '';
+                document.getElementById('edit-dob').value = currentUser.dob || '';
+                document.getElementById('edit-gender').value = currentUser.gender || 'Nam';
+
+                // Disable password change for social logins
+                const btnChangePwd = document.getElementById('btn-change-password');
+                if (btnChangePwd) {
+                    if (currentUser.provider !== 'email') {
+                        btnChangePwd.style.opacity = '0.5';
+                        btnChangePwd.style.pointerEvents = 'none';
+                        btnChangePwd.parentElement.querySelector('.setting-desc').textContent = 'Không thể đổi mật khẩu cho tài khoản Google/Facebook';
+                    }
+                }
+            }
+
+            renderUserInfo();
+
+            // ===== EDIT PROFILE MODAL =====
+            const editModal = document.getElementById('edit-profile-modal');
+            
+            document.getElementById('btn-edit-profile').addEventListener('click', () => {
+                editModal.classList.add('active');
+            });
+            
+            document.getElementById('edit-modal-close').addEventListener('click', () => {
+                editModal.classList.remove('active');
+            });
+
+            document.getElementById('form-edit-profile').addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                currentUser.fullname = document.getElementById('edit-fullname').value.trim();
+                currentUser.phone = document.getElementById('edit-phone').value.trim();
+                currentUser.dob = document.getElementById('edit-dob').value;
+                currentUser.gender = document.getElementById('edit-gender').value;
+
+                // Refresh avatar if name changed and using ui-avatars
+                if (!currentUser.provider || currentUser.provider === 'email') {
+                    currentUser.avatar = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(currentUser.fullname) + '&background=0d6efd&color=fff&size=128';
+                }
+
+                // Update current user
+                localStorage.setItem('medicare_current_user', JSON.stringify(currentUser));
+
+                // Update users list
+                const users = getUsers();
+                const uIndex = users.findIndex(u => u.email === currentUser.email);
+                if (uIndex > -1) {
+                    users[uIndex] = { ...users[uIndex], ...currentUser };
+                    saveUsers(users);
+                }
+
+                renderUserInfo();
+                editModal.classList.remove('active');
+                showToast('Cập nhật thông tin thành công!');
+            });
+
+            // ===== CHANGE PASSWORD MODAL =====
+            const pwdModal = document.getElementById('change-password-modal');
+            
+            document.getElementById('btn-change-password').addEventListener('click', () => {
+                pwdModal.classList.add('active');
+            });
+
+            document.getElementById('password-modal-close').addEventListener('click', () => {
+                pwdModal.classList.remove('active');
+            });
+
+            document.getElementById('form-change-password').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const oldPwd = document.getElementById('old-password').value;
+                const newPwd = document.getElementById('new-password').value;
+                const confirmPwd = document.getElementById('confirm-new-password').value;
+
+                const users = getUsers();
+                const uIndex = users.findIndex(u => u.email === currentUser.email);
+                
+                if (uIndex > -1) {
+                    if (users[uIndex].password !== oldPwd) {
+                        showToast('Mật khẩu hiện tại không đúng!', 'error');
+                        return;
+                    }
+                    if (newPwd.length < 6) {
+                        showToast('Mật khẩu mới phải có ít nhất 6 ký tự!', 'error');
+                        return;
+                    }
+                    if (newPwd !== confirmPwd) {
+                        showToast('Mật khẩu xác nhận không khớp!', 'error');
+                        return;
+                    }
+
+                    users[uIndex].password = newPwd;
+                    saveUsers(users);
+                    
+                    document.getElementById('form-change-password').reset();
+                    pwdModal.classList.remove('active');
+                    showToast('Đổi mật khẩu thành công!');
+                }
+            });
+
+            // Close modals on outside click
+            window.addEventListener('click', (e) => {
+                if (e.target === editModal) editModal.classList.remove('active');
+                if (e.target === pwdModal) pwdModal.classList.remove('active');
+            });
+
+            // ===== LOGOUT =====
+            document.getElementById('btn-logout').addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('medicare_current_user');
+                window.location.href = '../index.html';
+            });
 
             // ===== Tab Navigation =====
             const sidebarLinks = document.querySelectorAll('.sidebar-link');

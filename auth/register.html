@@ -33,35 +33,80 @@
                 <p class="auth-subtitle">Tham gia cùng hàng ngàn khách hàng của Medicare</p>
             </div>
 
-            <form action="#">
+            <!-- Social Method Selector -->
+            <div class="social-buttons">
+                <button type="button" class="btn-social btn-google" id="btn-google-mode">
+                    <span class="social-icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                        </svg>
+                    </span>
+                    Đăng ký bằng Google
+                </button>
+                <button type="button" class="btn-social btn-facebook" id="btn-facebook-mode">
+                    <span class="social-icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                        </svg>
+                    </span>
+                    Đăng ký bằng Facebook
+                </button>
+            </div>
+
+            <div class="auth-divider">
+                <span>hoặc đăng ký bằng email</span>
+            </div>
+
+            <!-- Dynamic Form -->
+            <form id="register-form">
+                <!-- Provider indicator (hidden by default) -->
+                <div id="provider-indicator" style="display:none; margin-bottom:20px; padding:12px 16px; border-radius:10px; display:none; align-items:center; gap:10px; font-size:14px; font-weight:600;">
+                    <span id="provider-icon"></span>
+                    <span id="provider-text"></span>
+                    <button type="button" id="provider-clear" style="margin-left:auto; background:none; border:none; cursor:pointer; font-size:16px; color:#9ca3af; padding:2px 6px; border-radius:4px; transition:color 0.2s;">&times;</button>
+                </div>
+
                 <div class="form-group">
-                    <label class="form-label" for="fullname">Họ và Tên</label>
+                    <label class="form-label" for="fullname" id="label-name">Họ và Tên</label>
                     <input type="text" id="fullname" class="form-control" placeholder="Ví dụ: Nguyễn Văn A" required>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="reg-email">Email</label>
+                    <label class="form-label" for="reg-email" id="label-email">Email</label>
                     <input type="email" id="reg-email" class="form-control" placeholder="Nhập địa chỉ email của bạn..." required>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" id="password-group">
                     <label class="form-label" for="reg-password">Mật khẩu</label>
-                    <input type="password" id="reg-password" class="form-control" placeholder="Tạo mật khẩu (Ít nhất 6 ký tự)" required>
+                    <div class="password-wrapper">
+                        <input type="password" id="reg-password" class="form-control" placeholder="Tạo mật khẩu (Ít nhất 6 ký tự)" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('reg-password', this)">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" id="confirm-group">
                     <label class="form-label" for="confirm-password">Xác nhận mật khẩu</label>
-                    <input type="password" id="confirm-password" class="form-control" placeholder="Nhập lại mật khẩu..." required>
+                    <div class="password-wrapper">
+                        <input type="password" id="confirm-password" class="form-control" placeholder="Nhập lại mật khẩu..." required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('confirm-password', this)">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="form-options" style="justify-content: flex-start; margin-bottom: 20px;">
                     <label class="checkbox-wrap">
-                        <input type="checkbox" required> 
+                        <input type="checkbox" id="agree-terms" required> 
                         <span>Tôi đồng ý với các <a href="#" class="forgot-link">Điều khoản dịch vụ</a></span>
                     </label>
                 </div>
 
-                <button type="submit" class="btn-auth">Đăng ký tài khoản</button>
+                <button type="submit" class="btn-auth" id="btn-submit">Đăng ký tài khoản</button>
             </form>
 
             <div class="auth-footer">
@@ -69,6 +114,12 @@
             </div>
         </div>
     </main>
+
+    <!-- Toast -->
+    <div class="auth-toast" id="auth-toast">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="auth-toast-msg">Thành công!</span>
+    </div>
 
     <footer class="footer">
         <div class="container footer-container">
@@ -85,6 +136,189 @@
             </p>
         </div>
     </footer>
+
+    <script>
+    (function() {
+        'use strict';
+
+        // ===== STATE =====
+        let currentProvider = 'email'; // 'email' | 'google' | 'facebook'
+
+        // ===== ELEMENTS =====
+        const btnGoogle = document.getElementById('btn-google-mode');
+        const btnFacebook = document.getElementById('btn-facebook-mode');
+        const indicator = document.getElementById('provider-indicator');
+        const providerIcon = document.getElementById('provider-icon');
+        const providerText = document.getElementById('provider-text');
+        const providerClear = document.getElementById('provider-clear');
+        const labelName = document.getElementById('label-name');
+        const labelEmail = document.getElementById('label-email');
+        const nameInput = document.getElementById('fullname');
+        const emailInput = document.getElementById('reg-email');
+        const passwordGroup = document.getElementById('password-group');
+        const confirmGroup = document.getElementById('confirm-group');
+        const btnSubmit = document.getElementById('btn-submit');
+        const dividerEl = document.querySelector('.auth-divider span');
+
+        // ===== HELPERS =====
+        function getUsers() {
+            return JSON.parse(localStorage.getItem('medicare_users') || '[]');
+        }
+        function saveUsers(users) {
+            localStorage.setItem('medicare_users', JSON.stringify(users));
+        }
+
+        function showToast(msg, type) {
+            const toast = document.getElementById('auth-toast');
+            const toastMsg = document.getElementById('auth-toast-msg');
+            const icon = toast.querySelector('i');
+            toast.className = 'auth-toast ' + type;
+            icon.className = type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark';
+            toastMsg.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        window.togglePassword = function(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fa-regular fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fa-regular fa-eye';
+            }
+        };
+
+        // ===== SWITCH MODE =====
+        function switchMode(provider) {
+            currentProvider = provider;
+
+            // Reset active states on buttons
+            btnGoogle.classList.toggle('active', provider === 'google');
+            btnFacebook.classList.toggle('active', provider === 'facebook');
+
+            if (provider === 'google') {
+                indicator.style.display = 'flex';
+                indicator.style.background = '#e8f0fe';
+                indicator.style.color = '#1a73e8';
+                indicator.style.border = '1px solid #a8c7fa';
+                providerIcon.innerHTML = '<i class="fa-brands fa-google" style="color:#4285F4;"></i>';
+                providerText.textContent = 'Đăng ký bằng tài khoản Google';
+                labelName.textContent = 'Tên tài khoản Google';
+                labelEmail.textContent = 'Email Google';
+                nameInput.placeholder = 'Nhập tên Google của bạn...';
+                emailInput.placeholder = 'Nhập email Google...';
+                passwordGroup.style.display = 'none';
+                confirmGroup.style.display = 'none';
+                btnSubmit.innerHTML = '<i class="fa-brands fa-google"></i> Đăng ký bằng Google';
+                btnSubmit.style.background = '#4285F4';
+                dividerEl.textContent = 'hoặc đăng ký bằng email';
+            } else if (provider === 'facebook') {
+                indicator.style.display = 'flex';
+                indicator.style.background = '#e7f0ff';
+                indicator.style.color = '#1877F2';
+                indicator.style.border = '1px solid #a3c9ff';
+                providerIcon.innerHTML = '<i class="fa-brands fa-facebook-f" style="color:#1877F2;"></i>';
+                providerText.textContent = 'Đăng ký bằng tài khoản Facebook';
+                labelName.textContent = 'Tên tài khoản Facebook';
+                labelEmail.textContent = 'Email Facebook';
+                nameInput.placeholder = 'Nhập tên Facebook của bạn...';
+                emailInput.placeholder = 'Nhập email Facebook...';
+                passwordGroup.style.display = 'none';
+                confirmGroup.style.display = 'none';
+                btnSubmit.innerHTML = '<i class="fa-brands fa-facebook-f"></i> Đăng ký bằng Facebook';
+                btnSubmit.style.background = '#1877F2';
+                dividerEl.textContent = 'hoặc đăng ký bằng email';
+            } else {
+                indicator.style.display = 'none';
+                labelName.textContent = 'Họ và Tên';
+                labelEmail.textContent = 'Email';
+                nameInput.placeholder = 'Ví dụ: Nguyễn Văn A';
+                emailInput.placeholder = 'Nhập địa chỉ email của bạn...';
+                passwordGroup.style.display = 'block';
+                confirmGroup.style.display = 'block';
+                btnSubmit.innerHTML = 'Đăng ký tài khoản';
+                btnSubmit.style.background = '#0d6efd';
+                dividerEl.textContent = 'hoặc đăng ký bằng email';
+            }
+
+            // Focus first field
+            nameInput.value = '';
+            emailInput.value = '';
+            nameInput.focus();
+        }
+
+        btnGoogle.addEventListener('click', () => switchMode(currentProvider === 'google' ? 'email' : 'google'));
+        btnFacebook.addEventListener('click', () => switchMode(currentProvider === 'facebook' ? 'email' : 'facebook'));
+        providerClear.addEventListener('click', () => switchMode('email'));
+
+        // ===== FORM SUBMIT =====
+        document.getElementById('register-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const fullname = nameInput.value.trim();
+            const email = emailInput.value.trim();
+            const agree = document.getElementById('agree-terms').checked;
+
+            if (!fullname || !email) {
+                showToast('Vui lòng điền đầy đủ thông tin!', 'error');
+                return;
+            }
+            if (!agree) {
+                showToast('Vui lòng đồng ý với điều khoản dịch vụ!', 'error');
+                return;
+            }
+
+            // Email mode needs password
+            let password = null;
+            if (currentProvider === 'email') {
+                password = document.getElementById('reg-password').value;
+                const confirm = document.getElementById('confirm-password').value;
+                if (!password) {
+                    showToast('Vui lòng nhập mật khẩu!', 'error');
+                    return;
+                }
+                if (password.length < 6) {
+                    showToast('Mật khẩu phải có ít nhất 6 ký tự!', 'error');
+                    return;
+                }
+                if (password !== confirm) {
+                    showToast('Mật khẩu xác nhận không khớp!', 'error');
+                    return;
+                }
+            }
+
+            // Check duplicate
+            const users = getUsers();
+            if (users.find(u => u.email === email)) {
+                showToast('Email này đã được đăng ký!', 'error');
+                return;
+            }
+
+            // Save user
+            users.push({
+                fullname,
+                email,
+                password,
+                provider: currentProvider,
+                avatar: currentProvider !== 'email'
+                    ? 'https://ui-avatars.com/api/?name=' + encodeURIComponent(fullname) + '&background=' + (currentProvider === 'google' ? '4285F4' : '1877F2') + '&color=fff&size=128'
+                    : null,
+                createdAt: new Date().toISOString()
+            });
+            saveUsers(users);
+
+            const providerLabel = currentProvider === 'google' ? 'Google' : currentProvider === 'facebook' ? 'Facebook' : 'email';
+            showToast('🎉 Đăng ký bằng ' + providerLabel + ' thành công!', 'success');
+            setTimeout(() => {
+                window.location.href = 'login.html?registered=' + encodeURIComponent(email) + '&provider=' + currentProvider;
+            }, 1500);
+        });
+
+    })();
+    </script>
 
 </body>
 

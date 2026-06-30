@@ -43,9 +43,13 @@
                     <span class="badge">3</span>
                 </a>
 
-                <a href="user/profile.html" class="action-item">
-                    <i class="fa-regular fa-user"></i>
-                </a>
+                <!-- User Area: dynamic login state -->
+                <div class="action-item" id="user-area" style="position:relative;">
+                    <!-- Will be filled by JS -->
+                    <a href="auth/login.html" id="user-link">
+                        <i class="fa-regular fa-user" style="font-size:20px; color:#495057;"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </header>
@@ -1068,6 +1072,757 @@
             </p>
         </div>
     </footer>
+
+    <!-- Cart Overlay -->
+    <div class="cart-overlay" id="cart-overlay"></div>
+
+    <!-- Cart Drawer -->
+    <div class="cart-drawer" id="cart-drawer">
+        <div class="cart-drawer-header">
+            <h2><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng <span class="cart-count-label"
+                    id="cart-count-label">0 sản phẩm</span></h2>
+            <button class="cart-close-btn" id="cart-close-btn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="cart-drawer-body" id="cart-drawer-body">
+            <!-- Cart items will be rendered here by JS -->
+        </div>
+        <div class="cart-drawer-footer" id="cart-drawer-footer">
+            <!-- Summary will be rendered here by JS -->
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="cart-toast" id="cart-toast">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="cart-toast-msg">Đã thêm vào giỏ hàng!</span>
+    </div>
+
+    <!-- Cart Script -->
+    <script>
+        (function () {
+            'use strict';
+
+            // ===== CART STATE =====
+            let cart = JSON.parse(localStorage.getItem('medicare_cart') || '[]');
+
+            // ===== DOM ELEMENTS =====
+            const cartOverlay = document.getElementById('cart-overlay');
+            const cartDrawer = document.getElementById('cart-drawer');
+            const cartCloseBtn = document.getElementById('cart-close-btn');
+            const cartBody = document.getElementById('cart-drawer-body');
+            const cartFooter = document.getElementById('cart-drawer-footer');
+            const cartCountLabel = document.getElementById('cart-count-label');
+            const cartToast = document.getElementById('cart-toast');
+            const cartToastMsg = document.getElementById('cart-toast-msg');
+            const headerBadge = document.querySelector('.cart-item .badge');
+            const cartIconBtn = document.querySelector('.cart-item');
+
+            // ===== OPEN / CLOSE DRAWER =====
+            function openCart() {
+                cartDrawer.classList.add('active');
+                cartOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                renderCart();
+            }
+
+            function closeCart() {
+                cartDrawer.classList.remove('active');
+                cartOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            cartCloseBtn.addEventListener('click', closeCart);
+            cartOverlay.addEventListener('click', closeCart);
+
+            // Cart icon in header
+            if (cartIconBtn) {
+                cartIconBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    openCart();
+                });
+            }
+
+            // ===== TOAST =====
+            let toastTimer;
+            function showToast(message) {
+                cartToastMsg.textContent = message;
+                cartToast.classList.add('show');
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => {
+                    cartToast.classList.remove('show');
+                }, 2200);
+            }
+
+            // ===== PARSE PRICE =====
+            function parsePrice(priceStr) {
+                return parseInt(priceStr.replace(/[^\d]/g, ''), 10) || 0;
+            }
+
+            function formatPrice(num) {
+                return num.toLocaleString('vi-VN') + ' VNĐ';
+            }
+
+            // ===== ADD TO CART =====
+            function addToCart(name, desc, price, imgSrc) {
+                const existing = cart.find(item => item.name === name);
+                if (existing) {
+                    existing.qty += 1;
+                } else {
+                    cart.push({ name, desc, price, imgSrc, qty: 1 });
+                }
+                saveCart();
+                updateBadge();
+                showToast(`Đã thêm "${name}" vào giỏ hàng!`);
+            }
+
+            // ===== REMOVE FROM CART =====
+            function removeFromCart(index) {
+                cart.splice(index, 1);
+                saveCart();
+                updateBadge();
+                renderCart();
+            }
+
+            // ===== CHANGE QTY =====
+            function changeQty(index, delta) {
+                cart[index].qty += delta;
+                if (cart[index].qty <= 0) {
+                    cart.splice(index, 1);
+                }
+                saveCart();
+                updateBadge();
+                renderCart();
+            }
+
+            // ===== SAVE / LOAD =====
+            function saveCart() {
+                localStorage.setItem('medicare_cart', JSON.stringify(cart));
+            }
+
+            // ===== UPDATE BADGE =====
+            function updateBadge() {
+                const total = cart.reduce((sum, item) => sum + item.qty, 0);
+                if (headerBadge) {
+                    headerBadge.textContent = total;
+                    headerBadge.classList.remove('pop');
+                    void headerBadge.offsetWidth; // reflow
+                    headerBadge.classList.add('pop');
+                }
+                cartCountLabel.textContent = total + ' sản phẩm';
+            }
+
+            // ===== RENDER CART =====
+            function renderCart() {
+                if (cart.length === 0) {
+                    cartBody.innerHTML = `
+                    <div class="cart-empty">
+                        <div class="cart-empty-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+                        <h3>Giỏ hàng trống</h3>
+                        <p>Hãy thêm sản phẩm để bắt đầu mua sắm!</p>
+                    </div>
+                `;
+                    cartFooter.innerHTML = '';
+                    return;
+                }
+
+                let itemsHtml = '';
+                let subtotal = 0;
+
+                cart.forEach((item, index) => {
+                    const lineTotal = item.price * item.qty;
+                    subtotal += lineTotal;
+                    itemsHtml += `
+                    <div class="cart-item" style="animation-delay: ${index * 0.05}s">
+                        <button class="cart-item-remove" onclick="window.__cart.remove(${index})" title="Xóa">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                        <div class="cart-item-img">
+                            <img src="${item.imgSrc}" alt="${item.name}">
+                        </div>
+                        <div class="cart-item-details">
+                            <div class="cart-item-name" title="${item.name}">${item.name}</div>
+                            <div class="cart-item-desc">${item.desc}</div>
+                            <div class="cart-item-bottom">
+                                <span class="cart-item-price">${formatPrice(lineTotal)}</span>
+                                <div class="qty-controls">
+                                    <button class="qty-btn" onclick="window.__cart.changeQty(${index}, -1)">−</button>
+                                    <span class="qty-value">${item.qty}</span>
+                                    <button class="qty-btn" onclick="window.__cart.changeQty(${index}, 1)">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                });
+
+                cartBody.innerHTML = itemsHtml;
+
+                const shipping = subtotal >= 300000 ? 0 : 25000;
+
+                // Handle Promo Code
+                let discount = 0;
+                let promoMessage = '';
+                if (window.__currentPromo === 'MEDICARE10') {
+                    discount = Math.round(subtotal * 0.1);
+                    promoMessage = '<span style="color:#10b981;font-size:12px;"><i class="fa-solid fa-check"></i> Đã giảm 10%</span>';
+                } else if (window.__currentPromo === 'FREESHIP') {
+                    discount = shipping;
+                    promoMessage = '<span style="color:#10b981;font-size:12px;"><i class="fa-solid fa-check"></i> Đã miễn phí ship</span>';
+                }
+
+                const total = subtotal + shipping - discount;
+
+                cartFooter.innerHTML = `
+                <div style="background:#f9fafb; padding:12px; border-radius:10px; margin-bottom:16px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px; font-weight:600; color:#374151;">
+                        <span><i class="fa-solid fa-ticket"></i> Mã khuyến mãi</span>
+                        ${promoMessage}
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <input type="text" id="cart-promo-input" placeholder="Nhập mã..." value="${window.__currentPromo || ''}" style="flex:1; padding:8px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:13px; outline:none;">
+                        <button onclick="window.__cart.applyPromo()" style="padding:8px 16px; background:#0d6efd; color:white; border:none; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer;">Áp dụng</button>
+                    </div>
+                    <div style="margin-top:8px; font-size:11px; color:#6b7280;">Mã gợi ý: <strong>MEDICARE10</strong> (Giảm 10%), <strong>FREESHIP</strong></div>
+                </div>
+                
+                <div class="cart-summary-row">
+                    <span class="cart-summary-label">Tạm tính</span>
+                    <span class="cart-summary-value">${formatPrice(subtotal)}</span>
+                </div>
+                <div class="cart-summary-row">
+                    <span class="cart-summary-label">Phí vận chuyển</span>
+                    <span class="cart-summary-value">${shipping === 0 ? '<span style="color:#34d399;font-weight:600">Miễn phí</span>' : formatPrice(shipping)}</span>
+                </div>
+                ${discount > 0 ? `
+                <div class="cart-summary-row">
+                    <span class="cart-summary-label" style="color:#10b981;">Giảm giá</span>
+                    <span class="cart-summary-value" style="color:#10b981;">-${formatPrice(discount)}</span>
+                </div>
+                ` : ''}
+                <div class="cart-summary-row">
+                    <span class="cart-total-label">Tổng cộng</span>
+                    <span class="cart-total-value">${formatPrice(total)}</span>
+                </div>
+                <a href="checkout.html" class="btn-checkout" id="btn-checkout" style="text-decoration:none;">
+                    <i class="fa-solid fa-lock"></i> Thanh toán
+                </a>
+                <button class="btn-continue" onclick="window.__cart.close()">
+                    <i class="fa-solid fa-arrow-left"></i> Tiếp tục mua sắm
+                </button>
+                ${subtotal < 300000 ? '<p style="text-align:center;font-size:12px;color:#9ca3af;margin-top:10px">🚚 Miễn phí vận chuyển cho đơn hàng từ 300.000 VNĐ</p>' : ''}
+            `;
+            }
+
+            // ===== ATTACH ADD-TO-CART BUTTONS =====
+            function attachCartButtons() {
+                document.querySelectorAll('.product-card .btn-cart').forEach(btn => {
+                    btn.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        const card = this.closest('.product-card');
+                        const name = card.querySelector('.product-name').textContent.trim();
+                        const desc = card.querySelector('.product-desc').textContent.trim();
+                        const priceStr = card.querySelector('.product-price').textContent.trim();
+                        const price = parsePrice(priceStr);
+                        const img = card.querySelector('.product-image img');
+                        const imgSrc = img ? img.src : '';
+
+                        addToCart(name, desc, price, imgSrc);
+
+                        // Button animation
+                        this.classList.add('added');
+                        setTimeout(() => this.classList.remove('added'), 400);
+                    });
+                });
+            }
+
+            // ===== PROMO CODE LOGIC =====
+            window.__currentPromo = null;
+            function applyPromo() {
+                const input = document.getElementById('cart-promo-input');
+                if (!input) return;
+                const code = input.value.trim().toUpperCase();
+
+                if (code === 'MEDICARE10' || code === 'FREESHIP') {
+                    window.__currentPromo = code;
+                    renderCart();
+                    showToast(`Đã áp dụng mã ${code}!`);
+                } else if (code === '') {
+                    window.__currentPromo = null;
+                    renderCart();
+                } else {
+                    alert('❌ Mã giảm giá không hợp lệ hoặc đã hết hạn!');
+                }
+            }
+
+            // ===== EXPOSE FOR INLINE HANDLERS =====
+            window.__cart = {
+                remove: removeFromCart,
+                changeQty: changeQty,
+                close: closeCart,
+                applyPromo: applyPromo
+            };
+
+            // ===== INIT =====
+            updateBadge();
+            attachCartButtons();
+
+        })();
+    </script>
+
+    <!-- User Auth State -->
+    <script>
+        (function () {
+            const userArea = document.getElementById('user-area');
+            const currentUser = JSON.parse(localStorage.getItem('medicare_current_user') || 'null');
+
+            if (currentUser && userArea) {
+                const providerColor = currentUser.provider === 'google' ? '#4285F4'
+                    : currentUser.provider === 'facebook' ? '#1877F2'
+                        : '#0d6efd';
+                const avatarUrl = currentUser.avatar ||
+                    'https://ui-avatars.com/api/?name=' + encodeURIComponent(currentUser.fullname) + '&background=0d6efd&color=fff&size=128';
+                const firstName = currentUser.fullname.split(' ').pop();
+
+                userArea.innerHTML = `
+                <div id="user-btn" style="display:flex; align-items:center; gap:8px; cursor:pointer; padding:4px 8px; border-radius:8px; transition:background 0.2s;">
+                    <img src="${avatarUrl}" alt="Avatar" 
+                        style="width:32px; height:32px; border-radius:50%; object-fit:cover; border:2px solid ${providerColor};"
+                        onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.fullname)}&background=0d6efd&color=fff&size=128'">
+                    <span style="font-size:14px; font-weight:600; color:#374151; max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${firstName}</span>
+                    <i class="fa-solid fa-chevron-down" style="font-size:10px; color:#9ca3af;"></i>
+                </div>
+                <div id="user-dropdown" style="display:none; position:absolute; top:calc(100% + 8px); right:0; background:white; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 8px 25px rgba(0,0,0,0.1); min-width:220px; z-index:200; overflow:hidden; animation:fadeSlide 0.2s ease;">
+                    <div style="padding:16px; border-bottom:1px solid #f3f4f6; display:flex; align-items:center; gap:12px;">
+                        <img src="${avatarUrl}" style="width:40px; height:40px; border-radius:50%; border:2px solid ${providerColor};"
+                            onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.fullname)}&background=0d6efd&color=fff&size=128'">
+                        <div>
+                            <div style="font-size:14px; font-weight:600; color:#1f2937;">${currentUser.fullname}</div>
+                            <div style="font-size:12px; color:#9ca3af;">${currentUser.email}</div>
+                        </div>
+                    </div>
+                    <a href="user/profile.html" style="display:flex; align-items:center; gap:10px; padding:12px 16px; font-size:14px; color:#374151; transition:background 0.15s; text-decoration:none;">
+                        <i class="fa-regular fa-user" style="width:18px; text-align:center; color:#6b7280;"></i> Tài khoản của tôi
+                    </a>
+                    <a href="#" style="display:flex; align-items:center; gap:10px; padding:12px 16px; font-size:14px; color:#374151; transition:background 0.15s; text-decoration:none;">
+                        <i class="fa-solid fa-clock-rotate-left" style="width:18px; text-align:center; color:#6b7280;"></i> Lịch sử đơn hàng
+                    </a>
+                    <div style="border-top:1px solid #f3f4f6;">
+                        <a href="#" id="btn-logout" style="display:flex; align-items:center; gap:10px; padding:12px 16px; font-size:14px; color:#ef4444; transition:background 0.15s; text-decoration:none;">
+                            <i class="fa-solid fa-right-from-bracket" style="width:18px; text-align:center;"></i> Đăng xuất
+                        </a>
+                    </div>
+                </div>
+            `;
+
+                // Toggle dropdown
+                const userBtn = document.getElementById('user-btn');
+                const dropdown = document.getElementById('user-dropdown');
+                let dropdownOpen = false;
+
+                userBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dropdownOpen = !dropdownOpen;
+                    dropdown.style.display = dropdownOpen ? 'block' : 'none';
+                });
+
+                document.addEventListener('click', () => {
+                    dropdownOpen = false;
+                    dropdown.style.display = 'none';
+                });
+
+                dropdown.addEventListener('click', (e) => e.stopPropagation());
+
+                // Hover effects on dropdown items
+                dropdown.querySelectorAll('a').forEach(a => {
+                    a.addEventListener('mouseenter', () => a.style.background = '#f9fafb');
+                    a.addEventListener('mouseleave', () => a.style.background = 'transparent');
+                });
+
+                // Logout
+                document.getElementById('btn-logout').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('medicare_current_user');
+                    window.location.reload();
+                });
+            }
+        })();
+    </script>
+
+    <style>
+        @keyframes fadeSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+    <!-- Search Filter Script -->
+    <script>
+        (function () {
+            // Map of keywords/symptoms to product names (substrings)
+            const productSymptomsMap = {
+                "panadol": ["đau đầu", "sốt", "đau nhức", "cảm cúm"],
+                "vitamin c": ["đề kháng", "miễn dịch", "mệt mỏi", "vitamin"],
+                "fish oil": ["mắt", "tim mạch", "trí não", "omega"],
+                "cerave": ["khô da", "dưỡng ẩm", "da liễu", "skincare"],
+                "rohto": ["mỏi mắt", "đỏ mắt", "khô mắt", "nhỏ mắt"],
+                "dầu gió": ["đau đầu", "chóng mặt", "buồn nôn", "đau bụng", "côn trùng cắn", "cảm lạnh", "eagle brand"],
+                "efferalgan": ["sốt", "đau đầu", "đau nhức", "giảm đau"],
+                "calcium": ["xương", "khớp", "canxi", "loãng xương"],
+                "alipas": ["sinh lý", "nam giới", "tăng cường sinh lực"],
+                "đào thi": ["nội tiết tố", "nữ giới", "vòng 1"],
+                "collagen": ["da", "tóc", "móng", "lão hóa", "làm đẹp", "trẻ hóa"],
+                "blackmores": ["đa vitamin", "sức khỏe", "bà bầu", "phụ nữ mang thai"],
+                "durex": ["bcs", "an toàn", "tình dục", "bao cao su"],
+                "urgo": ["vết thương", "chảy máu", "băng cá nhân", "băng dán"],
+                "nước muối": ["súc miệng", "rửa mắt", "rửa mũi", "sát khuẩn", "sinh lý"],
+                "khẩu trang": ["bụi", "vi khuẩn", "bảo vệ", "covid", "kháng khuẩn"]
+            };
+
+            const searchInput = document.querySelector('.search-bar input');
+            const productCards = document.querySelectorAll('.product-card');
+
+            if (searchInput && productCards.length > 0) {
+                searchInput.addEventListener('input', function (e) {
+                    const query = e.target.value.toLowerCase().trim();
+
+                    // Remove diacritics for better matching (optional but helpful)
+                    const removeVietnameseTones = (str) => {
+                        return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
+                    };
+
+                    const normalizedQuery = removeVietnameseTones(query);
+
+                    productCards.forEach(card => {
+                        const productNameElement = card.querySelector('.product-name');
+                        if (!productNameElement) return;
+
+                        const productName = productNameElement.textContent.toLowerCase();
+                        const normalizedProductName = removeVietnameseTones(productName);
+
+                        // Check if name matches directly
+                        let isMatch = normalizedProductName.includes(normalizedQuery);
+
+                        // If not match by name, check symptoms
+                        if (!isMatch && query.length > 0) {
+                            for (const [key, symptoms] of Object.entries(productSymptomsMap)) {
+                                // If this product matches the key in the map
+                                if (normalizedProductName.includes(removeVietnameseTones(key))) {
+                                    // Check if any symptom matches the query
+                                    const hasSymptom = symptoms.some(symptom => {
+                                        return removeVietnameseTones(symptom).includes(normalizedQuery);
+                                    });
+
+                                    if (hasSymptom) {
+                                        isMatch = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Show/Hide card
+                        if (isMatch || query === '') {
+                            card.style.display = '';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            }
+        })();
+    </script>
+
+    <!-- Quick View Modal -->
+    <div class="quick-view-overlay" id="quick-view-modal">
+        <div class="quick-view-content">
+            <div class="quick-view-header">
+                <button class="quick-view-close" id="qv-close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="quick-view-body">
+                <div class="qv-image-col">
+                    <img src="" alt="" class="qv-main-img" id="qv-img">
+                </div>
+                <div class="qv-info-col">
+                    <span class="qv-badge">THÔNG TIN SẢN PHẨM</span>
+                    <h2 class="qv-title" id="qv-title">Product Name</h2>
+                    <p class="qv-desc" id="qv-desc">Desc</p>
+                    <div class="qv-price-row">
+                        <span class="qv-price" id="qv-price">100.000 VNĐ</span>
+                        <button class="qv-btn-cart" id="qv-btn-cart"><i class="fa-solid fa-cart-shopping"></i> Thêm vào
+                            giỏ</button>
+                    </div>
+
+                    <div class="qv-tabs">
+                        <div class="qv-tab active" data-target="qv-uses">Công dụng</div>
+                        <div class="qv-tab" data-target="qv-dosage">Liều dùng</div>
+                        <div class="qv-tab" data-target="qv-ingredients">Thành phần</div>
+                    </div>
+
+                    <div class="qv-tab-content active" id="qv-uses">...</div>
+                    <div class="qv-tab-content" id="qv-dosage">...</div>
+                    <div class="qv-tab-content" id="qv-ingredients">...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick View Script -->
+    <script>
+        (function () {
+            const productDatabase = {
+                "panadol extra (viên sủi)": {
+                    uses: "Giảm đau từ nhẹ đến vừa (đau đầu, đau nửa đầu, đau cơ, đau bụng kinh, đau họng, đau răng) và hạ sốt.",
+                    dosage: "Người lớn và trẻ em trên 12 tuổi: 1-2 viên/lần, cách nhau 4-6 giờ. Tối đa 8 viên/ngày. Hòa tan vào nước trước khi uống.",
+                    ingredients: "Paracetamol 500mg, Caffeine 65mg. Tá dược: Sorbitol, Saccharin sodium, Sodium bicarbonate."
+                },
+                "vitamin c 500mg plus": {
+                    uses: "Bổ sung Vitamin C, hỗ trợ tăng cường sức đề kháng, phòng ngừa cảm cúm và các bệnh do thiếu hụt Vitamin C.",
+                    dosage: "Người lớn: 1-2 viên/ngày sau bữa ăn. Trẻ em: Tham khảo ý kiến bác sĩ.",
+                    ingredients: "Vitamin C (Ascorbic Acid) 500mg. Tá dược vừa đủ 1 viên."
+                },
+                "fish oil omega-3 1000mg": {
+                    uses: "Hỗ trợ phát triển não bộ, cải thiện thị lực. Giúp giảm mỡ máu, giảm nguy cơ mắc bệnh tim mạch.",
+                    dosage: "Người lớn: Uống 1-2 viên/ngày trong hoặc ngay sau bữa ăn. Trẻ em dưới 12 tuổi theo chỉ định của bác sĩ.",
+                    ingredients: "Dầu cá tự nhiên 1000mg (tương đương 300mg Omega-3: EPA 180mg, DHA 120mg)."
+                },
+                "kem dưỡng ẩm cerave": {
+                    uses: "Dưỡng ẩm sâu, phục hồi hàng rào bảo vệ da, làm dịu da khô, nứt nẻ và mẩn đỏ.",
+                    dosage: "Thoa một lượng vừa đủ lên da mặt hoặc cơ thể. Sử dụng hàng ngày, đặc biệt sau khi tắm.",
+                    ingredients: "Aqua/Water, Glycerin, Cetearyl Alcohol, Caprylic/Capric Triglyceride, 3 loại Ceramides thiết yếu, Hyaluronic Acid."
+                },
+                "thuốc nhỏ mắt v.rohto": {
+                    uses: "Làm giảm mỏi mắt, xung huyết kết mạc, ngứa mắt, phòng ngừa các bệnh về mắt (sau khi bơi lội hoặc do bụi bẩn).",
+                    dosage: "Nhỏ mắt 2-3 giọt/lần, 5-6 lần/ngày.",
+                    ingredients: "Panthenol, Vitamin B6, Potassium L-Aspartate, Dipotassium Glycyrrhizinate, Chlorpheniramine Maleate."
+                },
+                "dầu gió xanh eagle brand": {
+                    uses: "Giảm nhanh các triệu chứng nhức đầu, chóng mặt, đau lưng, thấp khớp, bong gân, vết đốt côn trùng cắn.",
+                    dosage: "Thoa lên vùng bị đau 3-4 lần mỗi ngày. Không thoa lên vết thương hở.",
+                    ingredients: "Menthol 28.5%, Methyl Salicylate 18.6%, Eucalyptus Oil 1.56%."
+                },
+                "efferalgan 500mg": {
+                    uses: "Điều trị các triệu chứng đau và/hoặc sốt (nhức đầu, tình trạng như cúm, nhức răng, nhức mỏi cơ).",
+                    dosage: "Người lớn: 1-2 viên sủi/lần, cách 4-6 giờ. Tối đa 3g/ngày (6 viên). Hòa tan trong nước.",
+                    ingredients: "Paracetamol 500mg."
+                },
+                "calcium d3 nycomed": {
+                    uses: "Bổ sung Canxi và Vitamin D3 giúp xương, răng chắc khỏe, phòng ngừa loãng xương.",
+                    dosage: "Người lớn: Nhai hoặc ngậm 1-2 viên/ngày. Trẻ em theo chỉ định bác sĩ.",
+                    ingredients: "Calcium carbonate (tương đương 500mg Canxi), Vitamin D3 (Colecalciferol) 200 IU."
+                }
+            };
+
+            const modal = document.getElementById('quick-view-modal');
+            const btnClose = document.getElementById('qv-close');
+
+            // Product elements
+            const cards = document.querySelectorAll('.product-card');
+
+            cards.forEach(card => {
+                // Only add click to the card, but exclude the cart button
+                card.addEventListener('click', (e) => {
+                    if (e.target.closest('.btn-cart')) return;
+
+                    const img = card.querySelector('img').src;
+                    const name = card.querySelector('.product-name').textContent;
+                    const desc = card.querySelector('.product-desc').textContent;
+                    const price = card.querySelector('.product-price').textContent;
+
+                    // Set data
+                    document.getElementById('qv-img').src = img;
+                    document.getElementById('qv-title').textContent = name;
+                    document.getElementById('qv-desc').textContent = desc;
+                    document.getElementById('qv-price').textContent = price;
+
+                    // Get detail info based on name
+                    const key = name.toLowerCase().trim();
+                    let details = productDatabase[key] || {
+                        uses: "Đang cập nhật thông tin chi tiết về công dụng của sản phẩm này.",
+                        dosage: "Đang cập nhật hướng dẫn sử dụng. Vui lòng đọc kỹ HDSD trên bao bì.",
+                        ingredients: "Đang cập nhật thành phần chi tiết."
+                    };
+
+                    document.getElementById('qv-uses').textContent = details.uses;
+                    document.getElementById('qv-dosage').textContent = details.dosage;
+                    document.getElementById('qv-ingredients').textContent = details.ingredients;
+
+                    // Store data for cart button inside modal
+                    const btnCart = document.getElementById('qv-btn-cart');
+                    btnCart.onclick = () => {
+                        const actualCartBtn = card.querySelector('.btn-cart');
+                        if (actualCartBtn) {
+                            actualCartBtn.click();
+                            btnCart.innerHTML = '<i class="fa-solid fa-check"></i> Đã thêm';
+                            setTimeout(() => {
+                                btnCart.innerHTML = '<i class="fa-solid fa-cart-shopping"></i> Thêm vào giỏ';
+                            }, 1500);
+                        }
+                    };
+
+                    // Show modal
+                    modal.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                });
+
+                // Add cursor pointer for indication
+                card.style.cursor = 'pointer';
+            });
+
+            // Close modal
+            btnClose.addEventListener('click', () => {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+
+            // Tabs
+            const tabs = document.querySelectorAll('.qv-tab');
+            const tabContents = document.querySelectorAll('.qv-tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.target).classList.add('active');
+                });
+            });
+        })();
+    </script>
+
+    <!-- Floating Mailbox (Promos) -->
+    <div class="floating-mailbox-wrapper">
+        <button class="floating-btn" id="mailbox-btn" title="Hộp thư ưu đãi">
+            <i class="fa-regular fa-envelope"></i>
+            <span class="mailbox-badge" id="mailbox-badge">2</span>
+        </button>
+
+        <div class="mailbox-popup" id="mailbox-popup">
+            <div class="mailbox-header">
+                <h3><i class="fa-solid fa-gift"></i> Hộp thư ưu đãi</h3>
+                <button class="mailbox-close" id="mailbox-close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="mailbox-body">
+                <!-- Message 1 -->
+                <div class="promo-msg-card unread">
+                    <div class="promo-msg-content">
+                        <div class="promo-msg-icon gift">
+                            <i class="fa-solid fa-user-plus"></i>
+                        </div>
+                        <div class="promo-msg-text">
+                            <div class="promo-msg-title">Tặng mã ưu đãi cho người mới!</div>
+                            <div class="promo-msg-desc">Chào mừng bạn đến với Medicare. Tặng bạn mã giảm 10% cho đơn
+                                hàng đầu tiên.</div>
+                            <div class="promo-code-box" onclick="copyPromoCode('MEDICARE10')">
+                                MEDICARE10 <i class="fa-regular fa-copy"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Message 2 -->
+                <div class="promo-msg-card unread">
+                    <div class="promo-msg-content">
+                        <div class="promo-msg-icon vip">
+                            <i class="fa-solid fa-truck-fast"></i>
+                        </div>
+                        <div class="promo-msg-text">
+                            <div class="promo-msg-title">Đặc quyền khách hàng thân thiết</div>
+                            <div class="promo-msg-desc">Miễn phí vận chuyển toàn quốc không giới hạn giá trị đơn hàng.
+                                Áp dụng ngay!</div>
+                            <div class="promo-code-box" onclick="copyPromoCode('FREESHIP')">
+                                FREESHIP <i class="fa-regular fa-copy"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Message 3 -->
+                <div class="promo-msg-card">
+                    <div class="promo-msg-content">
+                        <div class="promo-msg-icon flash">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                        <div class="promo-msg-text">
+                            <div class="promo-msg-title">Flash Sale cuối tuần</div>
+                            <div class="promo-msg-desc">Giảm ngay 50.000đ cho đơn hàng từ 500k. Số lượng có hạn! (Đã hết
+                                hạn)</div>
+                            <div class="promo-code-box" style="opacity:0.6; cursor:not-allowed;">
+                                WEEKEND50
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mailbox Script -->
+    <script>
+        (function () {
+            const btn = document.getElementById('mailbox-btn');
+            const popup = document.getElementById('mailbox-popup');
+            const close = document.getElementById('mailbox-close');
+            const badge = document.getElementById('mailbox-badge');
+
+            function toggleMailbox() {
+                btn.classList.toggle('active');
+                popup.classList.toggle('show');
+
+                // Mark as read
+                if (popup.classList.contains('show')) {
+                    badge.style.display = 'none';
+                    document.querySelectorAll('.promo-msg-card.unread').forEach(el => {
+                        el.classList.remove('unread');
+                    });
+                }
+            }
+
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleMailbox();
+            });
+
+            close.addEventListener('click', () => {
+                btn.classList.remove('active');
+                popup.classList.remove('show');
+            });
+
+            // Close when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!popup.contains(e.target) && !btn.contains(e.target) && popup.classList.contains('show')) {
+                    btn.classList.remove('active');
+                    popup.classList.remove('show');
+                }
+            });
+
+            window.copyPromoCode = function (code) {
+                navigator.clipboard.writeText(code).then(() => {
+                    alert('✅ Đã sao chép mã: ' + code);
+                }).catch(() => {
+                    const ta = document.createElement('textarea');
+                    ta.value = code;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    alert('✅ Đã sao chép mã: ' + code);
+                });
+            };
+        })();
+    </script>
 
 </body>
 
