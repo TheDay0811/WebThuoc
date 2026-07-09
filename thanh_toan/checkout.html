@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medicare - Thanh toán</title>
     <meta name="description" content="Thanh toán đơn hàng Medicare - Hệ thống nhà thuốc hàng đầu Việt Nam">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../main/styles.css">
     <link rel="stylesheet" href="checkout.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -20,8 +20,8 @@
     <header class="header">
         <div class="container header-container">
             <!-- Logo -->
-            <a href="index.html" class="logo">
-                <img src="assets/images/logo.png" alt="Medicare Icon" class="logo-img"
+            <a href="../main/index.html" class="logo">
+                <img src="../assets/images/logo.png" alt="Medicare Icon" class="logo-img"
                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
                 <!-- Fallback icon if image is missing -->
                 <div class="logo-fallback" style="display: none;">
@@ -38,11 +38,11 @@
 
             <!-- Header Actions -->
             <div class="header-actions">
-                <a href="index.html" class="action-item">
+                <a href="../main/index.html" class="action-item">
                     <i class="fa-solid fa-cart-shopping"></i>
                     <span class="badge" id="header-badge">0</span>
                 </a>
-                <a href="user/profile.html" class="action-item">
+                <a href="../user/profile.html" class="action-item">
                     <i class="fa-regular fa-user"></i>
                 </a>
             </div>
@@ -55,9 +55,9 @@
 
             <!-- Breadcrumb -->
             <div class="breadcrumb">
-                <a href="index.html">Trang chủ</a>
+                <a href="../main/index.html">Trang chủ</a>
                 <span class="separator"><i class="fa-solid fa-chevron-right"></i></span>
-                <a href="index.html">Giỏ hàng</a>
+                <a href="../main/index.html">Giỏ hàng</a>
                 <span class="separator"><i class="fa-solid fa-chevron-right"></i></span>
                 <span class="current">Thanh toán</span>
             </div>
@@ -364,7 +364,7 @@
                         </div>
                     </div>
 
-                    <a href="index.html" class="back-link">
+                    <a href="../main/index.html" class="back-link">
                         <i class="fa-solid fa-arrow-left"></i> Quay lại mua sắm
                     </a>
                 </div>
@@ -376,8 +376,8 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container footer-container">
-            <a href="index.html" class="logo footer-logo">
-                <img src="assets/images/logo.png" alt="Medicare Icon" class="logo-img"
+            <a href="../main/index.html" class="logo footer-logo">
+                <img src="../assets/images/logo.png" alt="Medicare Icon" class="logo-img"
                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
                 <div class="logo-fallback" style="display: none;">
                     <i class="fa-solid fa-capsules"></i>
@@ -399,7 +399,7 @@
             <p>Cảm ơn bạn đã đặt hàng tại Medicare.<br>Chúng tôi sẽ liên hệ xác nhận đơn hàng trong thời gian sớm nhất.</p>
             <div class="order-code" id="order-code">MD-000000</div>
             <br>
-            <a href="index.html" class="btn-home"><i class="fa-solid fa-house"></i> Về trang chủ</a>
+            <a href="../main/index.html" class="btn-home"><i class="fa-solid fa-house"></i> Về trang chủ</a>
         </div>
     </div>
 
@@ -437,7 +437,7 @@
                     <div style="text-align:center; padding:40px 0; color:#9ca3af;">
                         <i class="fa-solid fa-cart-shopping" style="font-size:40px; margin-bottom:12px; display:block;"></i>
                         <p>Giỏ hàng trống</p>
-                        <a href="index.html" style="color:#0d6efd; font-weight:600; margin-top:8px; display:inline-block;">Quay lại mua sắm</a>
+                        <a href="../main/index.html" style="color:#0d6efd; font-weight:600; margin-top:8px; display:inline-block;">Quay lại mua sắm</a>
                     </div>
                 `;
                 summaryTotals.innerHTML = '';
