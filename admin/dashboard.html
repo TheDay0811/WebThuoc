@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicare ERP - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+    <style>
+        /* ===== DASHBOARD SPECIFIC STYLES (KHÔNG CÓ .page-content) ===== */
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card-dashboard {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card-dashboard:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-icon-dashboard {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .stat-icon-dashboard.blue {
+            background: #e3f2fd;
+            color: #0d47a1;
+        }
+
+        .stat-icon-dashboard.green {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .stat-icon-dashboard.orange {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .stat-icon-dashboard.purple {
+            background: #f3e5f5;
+            color: #6a1b9a;
+        }
+
+        .stat-info-dashboard h3 {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 4px 0;
+            color: #1a1a1a;
+        }
+
+        .stat-info-dashboard p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .stat-info-dashboard .trend {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .stat-info-dashboard .trend.up {
+            color: #2e7d32;
+        }
+
+        .stat-info-dashboard .trend.down {
+            color: #c62828;
+        }
+
+        .chart-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .chart-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            height: 180px;
+            gap: 8px;
+        }
+
+        .chart-bar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .chart-bar .bar {
+            width: 100%;
+            max-width: 40px;
+            border-radius: 4px 4px 0 0;
+            background: linear-gradient(180deg, #0d47a1, #42a5f5);
+            transition: height 0.6s ease;
+            min-height: 4px;
+        }
+
+        .chart-bar .bar:hover {
+            opacity: 0.8;
+            transform: scaleX(1.1);
+        }
+
+        .chart-bar .label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .chart-bar .value-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .recent-orders {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .recent-orders h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .recent-orders h3 a {
+            font-size: 13px;
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .recent-orders h3 a:hover {
+            text-decoration: underline;
+        }
+
+        .recent-orders table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .recent-orders th {
+            text-align: left;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border-color);
+            background: #f9fafb;
+        }
+
+        .recent-orders td {
+            padding: 10px 12px;
+            font-size: 13px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .recent-orders tr:hover td {
+            background: #fafbfc;
+        }
+
+        .order-status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .order-status-badge.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .order-status-badge.confirmed {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .order-status-badge.shipping {
+            background: #ffedd5;
+            color: #c2410c;
+        }
+
+        .order-status-badge.delivered {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .order-status-badge.cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        @media (max-width: 1200px) {
+            .dashboard-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-container {
+                grid-template-columns: 1fr;
+            }
+
+            .recent-orders {
+                padding: 16px;
+                overflow-x: auto;
+            }
+
+            .recent-orders table {
+                font-size: 12px;
+                min-width: 500px;
+            }
+
+            .recent-orders th,
+            .recent-orders td {
+                padding: 8px 10px;
+            }
+
+            .stat-card-dashboard {
+                padding: 16px;
+            }
+
+            .stat-info-dashboard h3 {
+                font-size: 22px;
+            }
+
+            .chart-card {
+                padding: 16px;
+            }
+
+            .chart-bars {
+                height: 140px;
+            }
+
+            .page-content {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .stat-card-dashboard {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .stat-icon-dashboard {
+                width: 48px;
+                height: 48px;
+                font-size: 20px;
+            }
+
+            .stat-info-dashboard h3 {
+                font-size: 20px;
+            }
+
+            .page-content {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <a href="dashboard.html" style="text-decoration: none; color: inherit;">
+                    <h2>MEDICARE ERP</h2>
+                    <p>Medicare Admin<br><span>Pharmacy Resource Planning</span></p>
+                </a>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active"><a href="dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                    <li><a href="medicine.html"><i class="fas fa-pills"></i> Medicine Management</a></li>
+                    <li><a href="category.html"><i class="fas fa-sitemap"></i> Category Management</a></li>
+                    <li><a href="admin.html"><i class="fas fa-shopping-cart"></i> Orders</a></li>
+                    <li><a href="customers.html"><i class="fas fa-users"></i> Customers</a></li>
+                    <li><a href="prescription.html"><i class="fas fa-check-circle"></i> Prescription Approval</a></li>
+                    <li><a href="promotions.html"><i class="fas fa-bullhorn"></i> Promotions</a></li>
+                    <li><a href="chat.html"><i class="fas fa-comment-dots"></i> Chat với khách hàng</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="btn-primary w-100" id="btn-new-prescription">
+                    <i class="fas fa-plus-circle"></i> New Prescription
+                </button>
+            </div>
+        </aside>
+
+        <!-- ===== MAIN CONTENT ===== -->
+        <main class="main-content">
+
+            <!-- ===== HEADER ===== -->
+            <header class="top-header">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search dashboard...">
+                </div>
+                <div class="header-actions">
+                    <i class="far fa-bell"></i>
+                    <i class="far fa-moon"></i>
+                    <i class="far fa-question-circle"></i>
+
+                    <!-- User Profile -->
+                    <div class="user-profile" id="user-profile-dropdown">
+                        <div class="user-info" id="user-info-trigger" style="cursor:pointer;">
+                            <strong>Admin Profile</strong>
+                            <span>System Administrator</span>
+                        </div>
+                        <div class="avatar-wrapper" id="avatar-trigger" style="cursor:pointer;">
+                            <img src="https://ui-avatars.com/api/?name=Admin&background=0d6efd&color=fff&size=40"
+                                alt="Avatar" class="avatar">
+                            <i class="fas fa-chevron-down chevron-icon"></i>
+                        </div>
+
+                        <!-- Dropdown Menu -->
+                        <div class="dropdown-menu" id="dropdown-menu">
+                            <div class="dropdown-header">
+                                <div class="dropdown-avatar">
+                                    <img src="https://ui-avatars.com/api/?name=Admin&background=0d6efd&color=fff&size=50"
+                                        alt="Avatar">
+                                </div>
+                                <div class="dropdown-user-info">
+                                    <div class="dropdown-name">Admin Profile</div>
+                                    <div class="dropdown-role">System Administrator</div>
+                                    <div class="dropdown-email">admin@medicare.vn</div>
+                                </div>
+                            </div>
+
+                            <div class="dropdown-divider"></div>
+
+                            <a href="dashboard.html" class="dropdown-item">
+                                <i class="fas fa-th-large"></i> <span>Dashboard</span>
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-user"></i> <span>Tài khoản của tôi</span>
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-cog"></i> <span>Cài đặt</span>
+                            </a>
+
+                            <div class="dropdown-divider"></div>
+
+                            <a href="#" class="dropdown-item logout" id="btn-logout">
+                                <i class="fas fa-sign-out-alt"></i> <span>Đăng xuất</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- ===== PAGE CONTENT ===== -->
+            <div class="page-content">
+                <div class="page-header">
+                    <div>
+                        <h1>Dashboard</h1>
+                        <p>Overview of pharmacy performance and key metrics.</p>
+                    </div>
+                    <div>
+                        <button class="btn-outline" id="btn-refresh-dashboard">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="dashboard-stats" id="stats-container">
+                    <!-- Rendered by JS -->
+                </div>
+
+                <!-- Charts -->
+                <div class="chart-container">
+                    <div class="chart-card">
+                        <h3><i class="fas fa-chart-bar" style="color: var(--primary-blue);"></i> Weekly Revenue</h3>
+                        <div class="chart-bars" id="revenue-chart">
+                            <!-- Rendered by JS -->
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3><i class="fas fa-chart-pie" style="color: var(--primary-blue);"></i> Order Status</h3>
+                        <div id="status-chart">
+                            <!-- Rendered by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Orders -->
+                <div class="recent-orders">
+                    <h3>
+                        <span><i class="fas fa-clock-rotate-left" style="color: var(--primary-blue);"></i> Recent
+                            Orders</span>
+                        <a href="admin.html">View All →</a>
+                    </h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-orders-body">
+                            <!-- Rendered by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script src="../db.js"></script>
+    <script>
+        (function () {
+            'use strict';
+
+            const db = window.PharmacyDB;
+            if (!db) {
+                console.error('❌ PharmacyDB not loaded!');
+                return;
+            }
+
+            // ============================================================
+            // DATA
+            // ============================================================
+            function getOrders() {
+                return db.get('DON_HANG') || [];
+            }
+
+            function getMedicines() {
+                return db.get('THUOC', { trang_thai: 'active' }) || [];
+            }
+
+            function getCustomers() {
+                return db.get('KHACH_HANG', { trang_thai: 'active' }) || [];
+            }
+
+            function getPromotions() {
+                return db.get('KHUYEN_MAI', { trang_thai: 'active' }) || [];
+            }
+
+            // ============================================================
+            // RENDER STATS
+            // ============================================================
+            function renderStats() {
+                const orders = getOrders();
+                const medicines = getMedicines();
+                const customers = getCustomers();
+                const promotions = getPromotions();
+
+                const totalOrders = orders.length;
+                const totalRevenue = orders.reduce((sum, o) => sum + (o.tong_tien_thanh_toan || 0), 0);
+                const pendingOrders = orders.filter(o => o.trang_thai_don === 'cho_xac_nhan').length;
+                const totalMedicines = medicines.length;
+
+                const container = document.getElementById('stats-container');
+                container.innerHTML = `
+                    <div class="stat-card-dashboard">
+                        <div class="stat-icon-dashboard blue"><i class="fas fa-dollar-sign"></i></div>
+                        <div class="stat-info-dashboard">
+                            <p>Total Revenue</p>
+                            <h3>${formatCurrency(totalRevenue)}</h3>
+                            <span class="trend up"><i class="fas fa-arrow-up"></i> +12.5%</span>
+                        </div>
+                    </div>
+                    <div class="stat-card-dashboard">
+                        <div class="stat-icon-dashboard green"><i class="fas fa-shopping-cart"></i></div>
+                        <div class="stat-info-dashboard">
+                            <p>Total Orders</p>
+                            <h3>${totalOrders}</h3>
+                            <span class="trend up"><i class="fas fa-arrow-up"></i> +8.3%</span>
+                        </div>
+                    </div>
+                    <div class="stat-card-dashboard">
+                        <div class="stat-icon-dashboard orange"><i class="fas fa-clock"></i></div>
+                        <div class="stat-info-dashboard">
+                            <p>Pending Orders</p>
+                            <h3>${pendingOrders}</h3>
+                            <span class="trend down"><i class="fas fa-arrow-down"></i> -2.1%</span>
+                        </div>
+                    </div>
+                    <div class="stat-card-dashboard">
+                        <div class="stat-icon-dashboard purple"><i class="fas fa-pills"></i></div>
+                        <div class="stat-info-dashboard">
+                            <p>Active Medicines</p>
+                            <h3>${totalMedicines}</h3>
+                            <span class="trend up"><i class="fas fa-arrow-up"></i> +5.0%</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // ============================================================
+            // RENDER REVENUE CHART
+            // ============================================================
+            function renderRevenueChart() {
+                const orders = getOrders();
+                const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                const revenueByDay = {};
+
+                days.forEach(d => revenueByDay[d] = 0);
+
+                const now = new Date();
+                orders.forEach(o => {
+                    if (o.ngay_dat) {
+                        const d = new Date(o.ngay_dat);
+                        const diff = Math.floor((now - d) / (1000 * 60 * 60 * 24));
+                        if (diff >= 0 && diff < 7) {
+                            const dayName = days[6 - diff];
+                            revenueByDay[dayName] = (revenueByDay[dayName] || 0) + (o.tong_tien_thanh_toan || 0);
+                        }
+                    }
+                });
+
+                const max = Math.max(...Object.values(revenueByDay), 1);
+
+                const container = document.getElementById('revenue-chart');
+                container.innerHTML = days.map(day => {
+                    const value = revenueByDay[day] || 0;
+                    const height = Math.max((value / max) * 150, 4);
+                    return `
+                        <div class="chart-bar">
+                            <span class="value-label">${formatCurrency(value)}</span>
+                            <div class="bar" style="height: ${height}px;"></div>
+                            <span class="label">${day}</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // ============================================================
+            // RENDER STATUS CHART
+            // ============================================================
+            function renderStatusChart() {
+                const orders = getOrders();
+                const statusMap = {};
+                const statusColors = {
+                    'cho_xac_nhan': '#f59e0b',
+                    'da_xac_nhan': '#3b82f6',
+                    'dang_giao': '#8b5cf6',
+                    'da_giao': '#10b981',
+                    'da_huy': '#ef4444'
+                };
+                const statusLabels = {
+                    'cho_xac_nhan': 'Pending',
+                    'da_xac_nhan': 'Confirmed',
+                    'dang_giao': 'Shipping',
+                    'da_giao': 'Delivered',
+                    'da_huy': 'Cancelled'
+                };
+
+                orders.forEach(o => {
+                    const status = o.trang_thai_don || 'cho_xac_nhan';
+                    statusMap[status] = (statusMap[status] || 0) + 1;
+                });
+
+                const total = orders.length || 1;
+
+                const container = document.getElementById('status-chart');
+                container.innerHTML = `
+                    <div style="display: flex; flex-direction: column; gap: 12px; padding-top: 8px;">
+                        ${Object.entries(statusMap).map(([key, count]) => `
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: ${statusColors[key] || '#9ca3af'};"></span>
+                                <span style="flex: 1; font-size: 13px; color: #374151;">${statusLabels[key] || key}</span>
+                                <span style="font-size: 14px; font-weight: 600; color: #1a1a1a;">${count}</span>
+                                <span style="font-size: 12px; color: #9ca3af; min-width: 50px;">${Math.round((count / total) * 100)}%</span>
+                            </div>
+                        `).join('')}
+                        ${Object.keys(statusMap).length === 0 ? '<p style="color: #9ca3af; text-align: center; padding: 20px;">No orders yet</p>' : ''}
+                    </div>
+                `;
+            }
+
+            // ============================================================
+            // RENDER RECENT ORDERS
+            // ============================================================
+            function renderRecentOrders() {
+                const orders = getOrders();
+                const recent = orders
+                    .sort((a, b) => new Date(b.ngay_dat) - new Date(a.ngay_dat))
+                    .slice(0, 5);
+
+                const statusLabels = {
+                    'cho_xac_nhan': 'Pending',
+                    'da_xac_nhan': 'Confirmed',
+                    'dang_giao': 'Shipping',
+                    'da_giao': 'Delivered',
+                    'da_huy': 'Cancelled'
+                };
+                const statusClasses = {
+                    'cho_xac_nhan': 'pending',
+                    'da_xac_nhan': 'confirmed',
+                    'dang_giao': 'shipping',
+                    'da_giao': 'delivered',
+                    'da_huy': 'cancelled'
+                };
+
+                const tbody = document.getElementById('recent-orders-body');
+                if (recent.length === 0) {
+                    tbody.innerHTML =
+                        `<tr><td colspan="5" style="text-align: center; color: #9ca3af; padding: 30px;">No orders found</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = recent.map(o => {
+                    const customer = db.findOne('KHACH_HANG', { ma_khach_hang: o.ma_khach_hang });
+                    const customerName = customer ? customer.ho_ten : 'Guest';
+                    const status = o.trang_thai_don || 'cho_xac_nhan';
+                    const date = o.ngay_dat ? new Date(o.ngay_dat).toLocaleDateString('vi-VN') : 'N/A';
+                    const statusClass = statusClasses[status] || 'pending';
+                    const statusLabel = statusLabels[status] || status;
+                    return `
+                        <tr>
+                            <td><span style="font-weight: 600; color: var(--primary-blue);">#${o.ma_don_hang || 'N/A'}</span></td>
+                            <td>${customerName}</td>
+                            <td>${formatCurrency(o.tong_tien_thanh_toan || 0)}</td>
+                            <td><span class="order-status-badge ${statusClass}">${statusLabel}</span></td>
+                            <td>${date}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            // ============================================================
+            // HELPER
+            // ============================================================
+            function formatCurrency(amount) {
+                if (!amount) return '$0.00';
+                return '$' + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+
+            // ============================================================
+            // DROPDOWN MENU
+            // ============================================================
+            const profileContainer = document.getElementById('user-profile-dropdown');
+            const dropdownMenu = document.getElementById('dropdown-menu');
+            const avatarTrigger = document.getElementById('avatar-trigger');
+            const userInfoTrigger = document.getElementById('user-info-trigger');
+            const btnLogout = document.getElementById('btn-logout');
+
+            let isOpen = false;
+
+            function toggleDropdown(e) {
+                e.stopPropagation();
+                isOpen = !isOpen;
+                dropdownMenu.classList.toggle('active', isOpen);
+                if (avatarTrigger) avatarTrigger.classList.toggle('active', isOpen);
+            }
+
+            function closeDropdown() {
+                isOpen = false;
+                dropdownMenu.classList.remove('active');
+                if (avatarTrigger) avatarTrigger.classList.remove('active');
+            }
+
+            if (avatarTrigger) avatarTrigger.addEventListener('click', toggleDropdown);
+            if (userInfoTrigger) userInfoTrigger.addEventListener('click', toggleDropdown);
+
+            document.addEventListener('click', function (e) {
+                if (profileContainer && !profileContainer.contains(e.target)) {
+                    closeDropdown();
+                }
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeDropdown();
+            });
+
+            if (btnLogout) {
+                btnLogout.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    if (confirm('Bạn có chắc muốn đăng xuất?')) {
+                        localStorage.removeItem('medicare_current_user');
+                        localStorage.removeItem('medicare_users');
+                        window.location.href = '../auth/login.html';
+                    }
+                });
+            }
+
+            // ============================================================
+            // REFRESH
+            // ============================================================
+            function refreshDashboard() {
+                renderStats();
+                renderRevenueChart();
+                renderStatusChart();
+                renderRecentOrders();
+                showToast('🔄 Dashboard đã được cập nhật!');
+            }
+
+            function showToast(msg) {
+                const existing = document.querySelector('.admin-toast');
+                if (existing) existing.remove();
+
+                const toast = document.createElement('div');
+                toast.className = 'admin-toast';
+                toast.style.cssText = `
+                    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+                    background: #1f2937; color: white; padding: 14px 28px;
+                    border-radius: 12px; font-size: 14px; font-weight: 500;
+                    z-index: 2000; box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+                    animation: toastIn 0.4s ease;
+                `;
+                toast.textContent = msg;
+                document.body.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.animation = 'toastOut 0.4s ease forwards';
+                    setTimeout(() => toast.remove(), 400);
+                }, 2000);
+            }
+
+            // ============================================================
+            // EVENT LISTENERS
+            // ============================================================
+            document.getElementById('btn-refresh-dashboard')?.addEventListener('click', refreshDashboard);
+            document.getElementById('btn-new-prescription')?.addEventListener('click', function () {
+                alert('📋 New Prescription form will be available soon!');
+            });
+
+            // ============================================================
+            // INIT
+            // ============================================================
+            function init() {
+                renderStats();
+                renderRevenueChart();
+                renderStatusChart();
+                renderRecentOrders();
+                console.log('✅ Dashboard ready!');
+            }
+
+            // Auto refresh mỗi 30 giây
+            setInterval(refreshDashboard, 30000);
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+            // Add toast animation styles
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes toastIn {
+                    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+                    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+                }
+                @keyframes toastOut {
+                    from { opacity: 1; transform: translateX(-50%) translateY(0); }
+                    to { opacity: 0; transform: translateX(-50%) translateY(20px); }
+                }
+            `;
+            document.head.appendChild(style);
+
+        })();
+    </script>
+</body>
+
+</html>

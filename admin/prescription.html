@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicare ERP - Prescription Approval</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+    <style>
+        /* ===== PRESCRIPTION SPECIFIC STYLES ===== */
+        .prescription-filters {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .prescription-filters input,
+        .prescription-filters select {
+            padding: 10px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            background: white;
+        }
+
+        .prescription-filters input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .prescription-filters select:focus,
+        .prescription-filters input:focus {
+            border-color: var(--primary-blue);
+        }
+
+        .prescription-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .prescription-card:hover {
+            border-color: var(--primary-blue);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .prescription-card .prescription-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .prescription-card .prescription-id {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .prescription-card .prescription-date {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .prescription-card .prescription-customer {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .prescription-card .prescription-customer .avatar-sm {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #e3f2fd;
+            color: var(--primary-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .prescription-card .prescription-customer .customer-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .prescription-card .prescription-customer .customer-name {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .prescription-card .prescription-customer .customer-email {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .prescription-card .prescription-medicines {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+        }
+
+        .prescription-card .prescription-medicines .medicine-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            font-size: 14px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .prescription-card .prescription-medicines .medicine-item:last-child {
+            border-bottom: none;
+        }
+
+        .prescription-card .prescription-medicines .medicine-name {
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .prescription-card .prescription-medicines .medicine-dosage {
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .prescription-card .prescription-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .prescription-card .prescription-actions button {
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .prescription-card .prescription-actions .btn-approve {
+            background: #10b981;
+            color: white;
+        }
+
+        .prescription-card .prescription-actions .btn-approve:hover {
+            background: #059669;
+        }
+
+        .prescription-card .prescription-actions .btn-reject {
+            background: #ef4444;
+            color: white;
+        }
+
+        .prescription-card .prescription-actions .btn-reject:hover {
+            background: #dc2626;
+        }
+
+        .prescription-card .prescription-actions .btn-view {
+            background: #e3f2fd;
+            color: var(--primary-blue);
+        }
+
+        .prescription-card .prescription-actions .btn-view:hover {
+            background: #bbdefb;
+        }
+
+        .prescription-card .prescription-status {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .prescription-status.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .prescription-status.approved {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .prescription-status.rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .prescription-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .prescription-stat-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .prescription-stat-card .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .prescription-stat-card .stat-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .prescription-stat-card .stat-number.pending {
+            color: #f59e0b;
+        }
+
+        .prescription-stat-card .stat-number.approved {
+            color: #10b981;
+        }
+
+        .prescription-stat-card .stat-number.rejected {
+            color: #ef4444;
+        }
+
+        /* ===== VIEW PRESCRIPTION MODAL ===== */
+        .prescription-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .prescription-detail-item {
+            padding: 12px 16px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .prescription-detail-item .label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .prescription-detail-item .value {
+            font-size: 15px;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-top: 4px;
+        }
+
+        .prescription-medicine-list {
+            margin-top: 16px;
+        }
+
+        .prescription-medicine-list table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .prescription-medicine-list th {
+            text-align: left;
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            background: #f9fafb;
+        }
+
+        .prescription-medicine-list td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .modal-content.prescription-modal {
+            max-width: 700px;
+        }
+
+        .prescription-doctor-notes {
+            margin-top: 16px;
+            padding: 16px;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 8px;
+        }
+
+        .prescription-doctor-notes .label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #92400e;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .prescription-doctor-notes .value {
+            font-size: 14px;
+            color: #78350f;
+        }
+
+        .prescription-empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: #9ca3af;
+        }
+
+        .prescription-empty i {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 16px;
+        }
+
+        /* ===== MODAL OVERLAY ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 32px;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #9ca3af;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: #1a1a1a;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .modal-actions .btn-approve {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .modal-actions .btn-approve:hover {
+            background: #059669;
+        }
+
+        .modal-actions .btn-reject {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .modal-actions .btn-reject:hover {
+            background: #dc2626;
+        }
+
+        .modal-actions .btn-outline {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .modal-actions .btn-outline:hover {
+            background: #e5e7eb;
+        }
+
+        /* ===== TOAST ===== */
+        .admin-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 2000;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+            animation: toastIn 0.4s ease;
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        @keyframes toastOut {
+            from {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .prescription-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .prescription-filters {
+                flex-direction: column;
+            }
+
+            .prescription-filters input {
+                min-width: auto;
+            }
+
+            .prescription-detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content.prescription-modal {
+                padding: 20px;
+            }
+
+            .modal-actions {
+                flex-wrap: wrap;
+            }
+
+            .modal-actions button {
+                flex: 1;
+                min-width: 100px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .prescription-card {
+                padding: 16px;
+            }
+
+            .prescription-card .prescription-header {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .prescription-card .prescription-actions {
+                flex-wrap: wrap;
+            }
+
+            .prescription-card .prescription-actions button {
+                flex: 1;
+                min-width: 80px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <a href="dashboard.html" style="text-decoration: none; color: inherit;">
+                    <h2>MEDICARE ERP</h2>
+                    <p>Medicare Admin<br><span>Pharmacy Resource Planning</span></p>
+                </a>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                    <li><a href="medicine.html"><i class="fas fa-pills"></i> Medicine Management</a></li>
+                    <li><a href="category.html"><i class="fas fa-sitemap"></i> Category Management</a></li>
+                    <li><a href="admin.html"><i class="fas fa-shopping-cart"></i> Orders</a></li>
+                    <li><a href="customers.html"><i class="fas fa-users"></i> Customers</a></li>
+                    <li class="active"><a href="prescription.html"><i class="fas fa-check-circle"></i> Prescription
+                            Approval</a></li>
+                    <li><a href="promotions.html"><i class="fas fa-bullhorn"></i> Promotions</a></li>
+                    <li><a href="chat.html"><i class="fas fa-comment-dots"></i> Chat với khách hàng</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="btn-primary w-100" id="btn-refresh">
+                    <i class="fas fa-sync"></i> Refresh
+                </button>
+            </div>
+        </aside>
+
+        <!-- ===== MAIN CONTENT ===== -->
+        <main class="main-content">
+
+            <!-- ===== HEADER ===== -->
+            <header class="top-header">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-prescription" placeholder="Search prescriptions...">
+                </div>
+                <div class="header-actions">
+                    <i class="far fa-bell"></i>
+                    <i class="far fa-moon"></i>
+                    <i class="far fa-question-circle"></i>
+
+                    <!-- User Profile -->
+                    <div class="user-profile" id="user-profile-dropdown">
+                        <div class="user-info" id="user-info-trigger" style="cursor:pointer;">
+                            <strong>Admin Profile</strong>
+                            <span>System Administrator</span>
+                        </div>
+                        <div class="avatar-wrapper" id="avatar-trigger" style="cursor:pointer;">
+                            <img src="https://ui-avatars.com/api/?name=Admin&background=0d6efd&color=fff&size=40"
+                                alt="Avatar" class="avatar">
+                            <i class="fas fa-chevron-down chevron-icon"></i>
+                        </div>
+
+                        <!-- Dropdown Menu -->
+                        <div class="dropdown-menu" id="dropdown-menu">
+                            <div class="dropdown-header">
+                                <div class="dropdown-avatar">
+                                    <img src="https://ui-avatars.com/api/?name=Admin&background=0d6efd&color=fff&size=50"
+                                        alt="Avatar">
+                                </div>
+                                <div class="dropdown-user-info">
+                                    <div class="dropdown-name">Admin Profile</div>
+                                    <div class="dropdown-role">System Administrator</div>
+                                    <div class="dropdown-email">admin@medicare.vn</div>
+                                </div>
+                            </div>
+
+                            <div class="dropdown-divider"></div>
+
+                            <a href="dashboard.html" class="dropdown-item">
+                                <i class="fas fa-th-large"></i> <span>Dashboard</span>
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-user"></i> <span>Tài khoản của tôi</span>
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-cog"></i> <span>Cài đặt</span>
+                            </a>
+
+                            <div class="dropdown-divider"></div>
+
+                            <a href="#" class="dropdown-item logout" id="btn-logout">
+                                <i class="fas fa-sign-out-alt"></i> <span>Đăng xuất</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- ===== PAGE CONTENT ===== -->
+            <div class="page-content">
+                <div class="page-header">
+                    <div>
+                        <h1>Prescription Approval</h1>
+                        <p>Review and approve prescription orders from customers.</p>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="prescription-stats" id="prescription-stats">
+                    <!-- Rendered by JS -->
+                </div>
+
+                <!-- Filters -->
+                <div class="prescription-filters">
+                    <input type="text" id="search-prescription-input"
+                        placeholder="Search by prescription ID, customer, medicine...">
+                    <select id="filter-prescription-status">
+                        <option value="">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+
+                <!-- Prescription List -->
+                <div id="prescription-list">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ===== VIEW PRESCRIPTION MODAL ===== -->
+    <div class="modal-overlay" id="prescription-modal">
+        <div class="modal-content prescription-modal">
+            <div class="modal-header">
+                <h2 id="prescription-modal-title">Prescription Details</h2>
+                <button class="modal-close" id="prescription-modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="prescription-detail-body">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script src="../db.js"></script>
+    <script>
+        (function () {
+            'use strict';
+
+            const db = window.PharmacyDB;
+            if (!db) {
+                console.error('❌ PharmacyDB not loaded!');
+                return;
+            }
+
+            // ============================================================
+            // STATE
+            // ============================================================
+            let prescriptions = [];
+
+            // ============================================================
+            // DOM REFS
+            // ============================================================
+            const listContainer = document.getElementById('prescription-list');
+            const searchInput = document.getElementById('search-prescription-input');
+            const statusFilter = document.getElementById('filter-prescription-status');
+            const statsContainer = document.getElementById('prescription-stats');
+
+            // Modal
+            const modal = document.getElementById('prescription-modal');
+            const modalTitle = document.getElementById('prescription-modal-title');
+            const modalBody = document.getElementById('prescription-detail-body');
+            const modalClose = document.getElementById('prescription-modal-close');
+
+            // ============================================================
+            // LOAD DATA
+            // ============================================================
+            function loadPrescriptions() {
+                const orders = db.get('DON_HANG') || [];
+                const orderDetails = db.get('CHI_TIET_DON_HANG') || [];
+                const medicines = db.get('THUOC') || [];
+                const customers = db.get('KHACH_HANG') || [];
+
+                prescriptions = orders
+                    .filter(o => {
+                        const details = orderDetails.filter(d => d.ma_don_hang === o.ma_don_hang);
+                        return details.some(d => {
+                            const med = medicines.find(m => m.ma_thuoc === d.ma_thuoc);
+                            return med && med.can_toa_thuoc === true;
+                        });
+                    })
+                    .map(o => {
+                        const details = orderDetails.filter(d => d.ma_don_hang === o.ma_don_hang);
+                        const customer = customers.find(c => c.ma_khach_hang === o.ma_khach_hang);
+
+                        let status = 'pending';
+                        if (o.trang_thai_don === 'da_giao') status = 'approved';
+                        else if (o.trang_thai_don === 'da_huy') status = 'rejected';
+
+                        if (o.ma_nhan_vien_xu_ly && status === 'pending') {
+                            status = 'approved';
+                        }
+
+                        return {
+                            ma_don_hang: o.ma_don_hang,
+                            customer: customer,
+                            medicines: details.map(d => {
+                                const med = medicines.find(m => m.ma_thuoc === d.ma_thuoc);
+                                return {
+                                    ...d,
+                                    medicine: med,
+                                    requiresPrescription: med ? med.can_toa_thuoc : false
+                                };
+                            }).filter(d => d.requiresPrescription),
+                            ngay_dat: o.ngay_dat,
+                            trang_thai: status,
+                            dia_chi_giao: o.dia_chi_giao,
+                            tong_tien: o.tong_tien_thanh_toan,
+                            ma_nhan_vien_xu_ly: o.ma_nhan_vien_xu_ly
+                        };
+                    })
+                    .filter(p => p.medicines.length > 0)
+                    .sort((a, b) => new Date(b.ngay_dat) - new Date(a.ngay_dat));
+
+                renderStats();
+                applyFilters();
+                console.log('📦 Loaded', prescriptions.length, 'prescriptions');
+            }
+
+            // ============================================================
+            // RENDER STATS
+            // ============================================================
+            function renderStats() {
+                const total = prescriptions.length;
+                const pending = prescriptions.filter(p => p.trang_thai === 'pending').length;
+                const approved = prescriptions.filter(p => p.trang_thai === 'approved').length;
+                const rejected = prescriptions.filter(p => p.trang_thai === 'rejected').length;
+
+                statsContainer.innerHTML = `
+                    <div class="prescription-stat-card">
+                        <div class="stat-number">${total}</div>
+                        <div class="stat-label">Total Prescriptions</div>
+                    </div>
+                    <div class="prescription-stat-card">
+                        <div class="stat-number pending">${pending}</div>
+                        <div class="stat-label">Pending</div>
+                    </div>
+                    <div class="prescription-stat-card">
+                        <div class="stat-number approved">${approved}</div>
+                        <div class="stat-label">Approved</div>
+                    </div>
+                    <div class="prescription-stat-card">
+                        <div class="stat-number rejected">${rejected}</div>
+                        <div class="stat-label">Rejected</div>
+                    </div>
+                `;
+            }
+
+            // ============================================================
+            // FILTER
+            // ============================================================
+            function applyFilters() {
+                const keyword = searchInput.value.toLowerCase().trim();
+                const status = statusFilter.value;
+
+                let filtered = prescriptions.filter(p => {
+                    if (keyword) {
+                        const idMatch = String(p.ma_don_hang || '').includes(keyword);
+                        const customerMatch = (p.customer?.ho_ten || '').toLowerCase().includes(keyword);
+                        const medMatch = p.medicines.some(m =>
+                            (m.medicine?.ten_thuoc || '').toLowerCase().includes(keyword)
+                        );
+                        if (!idMatch && !customerMatch && !medMatch) return false;
+                    }
+                    if (status && p.trang_thai !== status) return false;
+                    return true;
+                });
+
+                renderPrescriptions(filtered);
+            }
+
+            // ============================================================
+            // RENDER PRESCRIPTIONS
+            // ============================================================
+            function renderPrescriptions(list) {
+                if (list.length === 0) {
+                    listContainer.innerHTML = `
+                        <div class="prescription-empty">
+                            <i class="fas fa-prescription"></i>
+                            <p style="font-size: 16px;">No prescriptions found</p>
+                            <p style="font-size: 14px;">Prescriptions will appear here when customers order medicines that require a prescription.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                listContainer.innerHTML = list.map(p => {
+                    const statusClass = p.trang_thai;
+                    const statusLabel = p.trang_thai === 'pending' ? 'Pending' :
+                        p.trang_thai === 'approved' ? 'Approved' : 'Rejected';
+                    const customerName = p.customer?.ho_ten || 'Guest';
+                    const customerInitial = customerName.split(' ').pop()?.[0] || '?';
+                    const date = p.ngay_dat ? new Date(p.ngay_dat).toLocaleDateString('vi-VN') : 'N/A';
+
+                    const medicinesHtml = p.medicines.map(m => `
+                        <div class="medicine-item">
+                            <span class="medicine-name">${m.medicine?.ten_thuoc || 'Unknown'}</span>
+                            <span class="medicine-dosage">x${m.so_luong}</span>
+                        </div>
+                    `).join('');
+
+                    const canAction = p.trang_thai === 'pending';
+
+                    return `
+                        <div class="prescription-card">
+                            <div class="prescription-header">
+                                <div>
+                                    <span class="prescription-id">#${p.ma_don_hang}</span>
+                                    <span class="prescription-status ${statusClass}">${statusLabel}</span>
+                                </div>
+                                <span class="prescription-date"><i class="far fa-calendar"></i> ${date}</span>
+                            </div>
+                            <div class="prescription-customer">
+                                <div class="avatar-sm">${customerInitial}</div>
+                                <div class="customer-info">
+                                    <span class="customer-name">${customerName}</span>
+                                    <span class="customer-email">${p.customer?.email || 'N/A'}</span>
+                                </div>
+                            </div>
+                            <div class="prescription-medicines">
+                                ${medicinesHtml}
+                            </div>
+                            <div class="prescription-actions">
+                                <button class="btn-view" data-id="${p.ma_don_hang}">
+                                    <i class="fas fa-eye"></i> View Details
+                                </button>
+                                ${canAction ? `
+                                    <button class="btn-approve" data-id="${p.ma_don_hang}">
+                                        <i class="fas fa-check"></i> Approve
+                                    </button>
+                                    <button class="btn-reject" data-id="${p.ma_don_hang}">
+                                        <i class="fas fa-times"></i> Reject
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // ============================================================
+            // VIEW PRESCRIPTION DETAIL
+            // ============================================================
+            function viewPrescription(id) {
+                const p = prescriptions.find(p => p.ma_don_hang === parseInt(id));
+                if (!p) {
+                    showToast('Prescription not found!', 'error');
+                    return;
+                }
+
+                modalTitle.textContent = `Prescription #${p.ma_don_hang}`;
+
+                const customerName = p.customer?.ho_ten || 'Guest';
+                const date = p.ngay_dat ? new Date(p.ngay_dat).toLocaleString('vi-VN') : 'N/A';
+                const statusLabel = p.trang_thai === 'pending' ? 'Pending' :
+                    p.trang_thai === 'approved' ? 'Approved' : 'Rejected';
+                const statusClass = p.trang_thai;
+
+                const medicinesHtml = p.medicines.map(m => `
+                    <tr>
+                        <td>${m.medicine?.ten_thuoc || 'Unknown'}</td>
+                        <td>${m.medicine?.thanh_phan || 'N/A'}</td>
+                        <td>${m.so_luong}</td>
+                        <td>${formatCurrency(m.don_gia || 0)}</td>
+                        <td>${formatCurrency((m.don_gia || 0) * (m.so_luong || 1))}</td>
+                    </tr>
+                `).join('');
+
+                const hasDoctorNotes = p.ma_nhan_vien_xu_ly ? true : false;
+
+                modalBody.innerHTML = `
+                    <div class="prescription-detail-grid">
+                        <div class="prescription-detail-item">
+                            <div class="label">Prescription ID</div>
+                            <div class="value" style="color: var(--primary-blue); font-weight: 700;">#${p.ma_don_hang}</div>
+                        </div>
+                        <div class="prescription-detail-item">
+                            <div class="label">Status</div>
+                            <div class="value"><span class="prescription-status ${statusClass}">${statusLabel}</span></div>
+                        </div>
+                        <div class="prescription-detail-item">
+                            <div class="label">Customer</div>
+                            <div class="value">${customerName}</div>
+                        </div>
+                        <div class="prescription-detail-item">
+                            <div class="label">Date</div>
+                            <div class="value">${date}</div>
+                        </div>
+                        <div class="prescription-detail-item">
+                            <div class="label">Email</div>
+                            <div class="value">${p.customer?.email || 'N/A'}</div>
+                        </div>
+                        <div class="prescription-detail-item">
+                            <div class="label">Total Amount</div>
+                            <div class="value" style="font-size: 18px; color: var(--primary-blue);">${formatCurrency(p.tong_tien || 0)}</div>
+                        </div>
+                        <div class="prescription-detail-item" style="grid-column: 1/-1;">
+                            <div class="label">Delivery Address</div>
+                            <div class="value">${p.dia_chi_giao || 'No address provided'}</div>
+                        </div>
+                    </div>
+
+                    <div class="prescription-medicine-list">
+                        <h4 style="font-size: 14px; font-weight: 600; margin: 16px 0 12px; color: #374151;">
+                            <i class="fas fa-pills"></i> Medicines Requiring Prescription
+                        </h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Medicine</th>
+                                    <th>Ingredient</th>
+                                    <th>Qty</th>
+                                    <th>Unit Price</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${medicinesHtml}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    ${hasDoctorNotes ? `
+                        <div class="prescription-doctor-notes">
+                            <span class="label"><i class="fas fa-stethoscope"></i> Pharmacist Notes</span>
+                            <div class="value">Prescription reviewed and approved by pharmacist #${p.ma_nhan_vien_xu_ly}</div>
+                        </div>
+                    ` : ''}
+
+                    <div class="modal-actions">
+                        ${p.trang_thai === 'pending' ? `
+                            <button class="btn-approve" onclick="window.__adminPrescription.approve(${p.ma_don_hang})">
+                                <i class="fas fa-check"></i> Approve Prescription
+                            </button>
+                            <button class="btn-reject" onclick="window.__adminPrescription.reject(${p.ma_don_hang})">
+                                <i class="fas fa-times"></i> Reject Prescription
+                            </button>
+                        ` : ''}
+                        <button class="btn-outline" onclick="window.__adminPrescription.closeModal()">Close</button>
+                    </div>
+                `;
+
+                modal.classList.add('active');
+            }
+
+            // ============================================================
+            // APPROVE / REJECT
+            // ============================================================
+            function approvePrescription(id) {
+                if (confirm('Are you sure you want to approve this prescription?')) {
+                    db.update('DON_HANG', { ma_don_hang: parseInt(id) }, {
+                        ma_nhan_vien_xu_ly: 1,
+                        trang_thai_don: 'da_xac_nhan'
+                    });
+                    showToast('✅ Prescription approved successfully!');
+                    loadPrescriptions();
+                }
+            }
+
+            function rejectPrescription(id) {
+                if (confirm('Are you sure you want to reject this prescription?')) {
+                    db.update('DON_HANG', { ma_don_hang: parseInt(id) }, {
+                        trang_thai_don: 'da_huy'
+                    });
+                    showToast('❌ Prescription rejected!');
+                    loadPrescriptions();
+                }
+            }
+
+            function closeModal() {
+                modal.classList.remove('active');
+            }
+
+            // ============================================================
+            // HELPER
+            // ============================================================
+            function formatCurrency(amount) {
+                if (!amount) return '0 VNĐ';
+                return amount.toLocaleString('vi-VN') + ' VNĐ';
+            }
+
+            function showToast(msg, type = 'success') {
+                const existing = document.querySelector('.admin-toast');
+                if (existing) existing.remove();
+
+                const toast = document.createElement('div');
+                toast.className = 'admin-toast';
+                const colors = {
+                    success: '#1f2937',
+                    error: '#dc2626'
+                };
+                toast.style.background = colors[type] || '#1f2937';
+                toast.textContent = msg;
+                document.body.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.animation = 'toastOut 0.4s ease forwards';
+                    setTimeout(() => toast.remove(), 400);
+                }, 3000);
+            }
+
+            // ============================================================
+            // DROPDOWN MENU
+            // ============================================================
+            const profileContainer = document.getElementById('user-profile-dropdown');
+            const dropdownMenu = document.getElementById('dropdown-menu');
+            const avatarTrigger = document.getElementById('avatar-trigger');
+            const userInfoTrigger = document.getElementById('user-info-trigger');
+            const btnLogout = document.getElementById('btn-logout');
+
+            let isOpen = false;
+
+            function toggleDropdown(e) {
+                e.stopPropagation();
+                isOpen = !isOpen;
+                dropdownMenu.classList.toggle('active', isOpen);
+                if (avatarTrigger) avatarTrigger.classList.toggle('active', isOpen);
+            }
+
+            function closeDropdown() {
+                isOpen = false;
+                dropdownMenu.classList.remove('active');
+                if (avatarTrigger) avatarTrigger.classList.remove('active');
+            }
+
+            if (avatarTrigger) avatarTrigger.addEventListener('click', toggleDropdown);
+            if (userInfoTrigger) userInfoTrigger.addEventListener('click', toggleDropdown);
+
+            document.addEventListener('click', function (e) {
+                if (profileContainer && !profileContainer.contains(e.target)) {
+                    closeDropdown();
+                }
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeDropdown();
+            });
+
+            if (btnLogout) {
+                btnLogout.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    if (confirm('Bạn có chắc muốn đăng xuất?')) {
+                        localStorage.removeItem('medicare_current_user');
+                        localStorage.removeItem('medicare_users');
+                        window.location.href = '../auth/login.html';
+                    }
+                });
+            }
+
+            // ============================================================
+            // EXPOSE
+            // ============================================================
+            window.__adminPrescription = {
+                view: viewPrescription,
+                approve: approvePrescription,
+                reject: rejectPrescription,
+                closeModal: closeModal
+            };
+
+            // ============================================================
+            // EVENT LISTENERS
+            // ============================================================
+            searchInput.addEventListener('input', applyFilters);
+            statusFilter.addEventListener('change', applyFilters);
+
+            modalClose.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+
+            document.getElementById('btn-refresh').addEventListener('click', loadPrescriptions);
+
+            listContainer.addEventListener('click', (e) => {
+                const target = e.target.closest('button');
+                if (!target) return;
+
+                const id = target.dataset.id;
+                if (!id) return;
+
+                if (target.classList.contains('btn-view')) {
+                    viewPrescription(id);
+                }
+                if (target.classList.contains('btn-approve')) {
+                    approvePrescription(id);
+                }
+                if (target.classList.contains('btn-reject')) {
+                    rejectPrescription(id);
+                }
+            });
+
+            // ============================================================
+            // INIT
+            // ============================================================
+            loadPrescriptions();
+
+            // Add toast animation styles
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes toastOut {
+                    from { opacity: 1; transform: translateX(-50%) translateY(0); }
+                    to { opacity: 0; transform: translateX(-50%) translateY(20px); }
+                }
+            `;
+            document.head.appendChild(style);
+
+            console.log('✅ Prescription Approval ready!');
+
+        })();
+    </script>
+</body>
+
+</html>

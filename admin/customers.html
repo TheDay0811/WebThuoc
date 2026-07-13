@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicare ERP - Customers</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+    <style>
+        /* ===== CUSTOMERS SPECIFIC STYLES ===== */
+        .customer-filters {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .customer-filters input,
+        .customer-filters select {
+            padding: 10px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            background: white;
+        }
+
+        .customer-filters input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .customer-filters select:focus,
+        .customer-filters input:focus {
+            border-color: var(--primary-blue);
+        }
+
+        .customer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--border-color);
+        }
+
+        .customer-name-cell {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .customer-email-cell {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .status-badge-customer {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge-customer.active {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-badge-customer.inactive {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .status-badge-customer.banned {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .customer-orders-count {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+
+        .customer-joined {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ===== CUSTOMER DETAIL MODAL ===== */
+        .customer-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .customer-detail-item {
+            padding: 12px 16px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .customer-detail-item .label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .customer-detail-item .value {
+            font-size: 15px;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-top: 4px;
+        }
+
+        .customer-detail-item .value .provider-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .provider-badge.email {
+            background: #e3f2fd;
+            color: var(--primary-blue);
+        }
+
+        .provider-badge.google {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .provider-badge.facebook {
+            background: #e8eaf6;
+            color: #1a237e;
+        }
+
+        .customer-recent-orders {
+            margin-top: 20px;
+        }
+
+        .customer-recent-orders table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .customer-recent-orders th {
+            text-align: left;
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        .customer-recent-orders td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .modal-content.customer-modal {
+            max-width: 700px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .modal-actions .btn-danger {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .modal-actions .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .modal-actions .btn-success {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .modal-actions .btn-success:hover {
+            background: #059669;
+        }
+
+        .modal-actions .btn-outline {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .modal-actions .btn-outline:hover {
+            background: #e5e7eb;
+        }
+
+        /* ===== MODAL OVERLAY ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 32px;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #9ca3af;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: #1a1a1a;
+        }
+
+        /* ===== TOAST ===== */
+        .admin-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 2000;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+            animation: toastIn 0.4s ease;
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        @keyframes toastOut {
+            from {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .customer-filters {
+                flex-direction: column;
+            }
+
+            .customer-filters input {
+                min-width: auto;
+            }
+
+            .customer-detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content.customer-modal {
+                padding: 20px;
+            }
+
+            .modal-actions {
+                flex-wrap: wrap;
+            }
+
+            .modal-actions button {
+                flex: 1;
+                min-width: 100px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            .customer-avatar {
+                width: 32px;
+                height: 32px;
+            }
+
+            .customer-name-cell {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <a href="dashboard.html" style="text-decoration: none; color: inherit;">
+                    <h2>MEDICARE ERP</h2>
+                    <p>Medicare Admin<br><span>Pharmacy Resource Planning</span></p>
+                </a>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                    <li><a href="medicine.html"><i class="fas fa-pills"></i> Medicine Management</a></li>
+                    <li><a href="category.html"><i class="fas fa-sitemap"></i> Category Management</a></li>
+                    <li><a href="admin.html"><i class="fas fa-shopping-cart"></i> Orders</a></li>
+                    <li class="active"><a href="customers.html"><i class="fas fa-users"></i> Customers</a></li>
+                    <li><a href="prescription.html"><i class="fas fa-check-circle"></i> Prescription Approval</a></li>
+                    <li><a href="promotions.html"><i class="fas fa-bullhorn"></i> Promotions</a></li>
+                    <li><a href="chat.html"><i class="fas fa-comment-dots"></i> Chat với khách hàng</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="btn-primary w-100" id="btn-export-customers">
+                    <i class="fas fa-download"></i> Export Customers
+                </button>
+            </div>
+        </aside>
+
+        <!-- ===== MAIN CONTENT ===== -->
+        <main class="main-content">
+
+            <!-- ===== HEADER ===== -->
+            <header class="top-header">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-customer" placeholder="Search customers...">
+                </div>
+                <div class="header-actions">
+                    <i class="far fa-bell"></i>
+                    <i class="far fa-moon"></i>
+                    <i class="far fa-question-circle"></i>
+
+                    <!-- User Profile -->
+                    <div class="user-profile" id="user-profile-dropdown">
+                        <div class="user-info" id="user-info-trigger" style="cursor:pointer;">
+                            <strong>Admin Profile</strong>
+                            <span>System Administrator</span>
+                        </div>
+                        <div class="avatar-wrapper" id="avatar-trigger" style="cursor:pointer;">
+                            <img src="https://ui-avatars.com/api/?name=Admin&background=0d6efd&color=fff&size=40"
+                                alt="Avatar" class="avatar">
+                            <i class="fas fa-chevron-down chevron-icon"></i>
+                        </div>
+
+                        <!-- Dropdown Menu -->
+                        <div class="dropdown-menu" id="dropdown-menu">
+                            <div class="dropdown-header">
+                                <div class="dropdown-avatar">
+                                    <img src="https://ui-avatars.com/api/?name=Admin&background=0d6efd&color=fff&size=50"
+                                        alt="Avatar">
+                                </div>
+                                <div class="dropdown-user-info">
+                                    <div class="dropdown-name">Admin Profile</div>
+                                    <div class="dropdown-role">System Administrator</div>
+                                    <div class="dropdown-email">admin@medicare.vn</div>
+                                </div>
+                            </div>
+
+                            <div class="dropdown-divider"></div>
+
+                            <a href="dashboard.html" class="dropdown-item">
+                                <i class="fas fa-th-large"></i> <span>Dashboard</span>
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-user"></i> <span>Tài khoản của tôi</span>
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-cog"></i> <span>Cài đặt</span>
+                            </a>
+
+                            <div class="dropdown-divider"></div>
+
+                            <a href="#" class="dropdown-item logout" id="btn-logout">
+                                <i class="fas fa-sign-out-alt"></i> <span>Đăng xuất</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- ===== PAGE CONTENT ===== -->
+            <div class="page-content">
+                <div class="page-header">
+                    <div>
+                        <h1>Customer Management</h1>
+                        <p>View and manage all registered customers.</p>
+                    </div>
+                    <div>
+                        <span style="font-size: 14px; color: var(--text-muted);" id="total-customers">Total: 0</span>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="customer-filters">
+                    <input type="text" id="search-customer-input" placeholder="Search by name, email, phone...">
+                    <select id="filter-status">
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="banned">Banned</option>
+                    </select>
+                    <select id="filter-provider">
+                        <option value="">All Providers</option>
+                        <option value="email">Email</option>
+                        <option value="google">Google</option>
+                        <option value="facebook">Facebook</option>
+                    </select>
+                </div>
+
+                <!-- Table -->
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Status</th>
+                                <th>Orders</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customer-list">
+                            <!-- Rendered by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px;">
+                    <span id="pagination-info" style="font-size: 14px; color: var(--text-muted);">Showing 0 items</span>
+                    <div style="display: flex; gap: 8px;" id="pagination-controls"></div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ===== CUSTOMER DETAIL MODAL ===== -->
+    <div class="modal-overlay" id="customer-modal">
+        <div class="modal-content customer-modal">
+            <div class="modal-header">
+                <h2 id="customer-modal-title">Customer Details</h2>
+                <button class="modal-close" id="customer-modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="customer-detail-body">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script src="../db.js"></script>
+    <script>
+        (function () {
+            'use strict';
+
+            const db = window.PharmacyDB;
+            if (!db) {
+                console.error('❌ PharmacyDB not loaded!');
+                return;
+            }
+
+            // ============================================================
+            // STATE
+            // ============================================================
+            let currentPage = 1;
+            const pageSize = 10;
+            let customers = [];
+            let filteredCustomers = [];
+
+            // ============================================================
+            // DOM REFS
+            // ============================================================
+            const tbody = document.getElementById('customer-list');
+            const searchInput = document.getElementById('search-customer-input');
+            const statusFilter = document.getElementById('filter-status');
+            const providerFilter = document.getElementById('filter-provider');
+            const paginationInfo = document.getElementById('pagination-info');
+            const paginationControls = document.getElementById('pagination-controls');
+            const totalCustomers = document.getElementById('total-customers');
+
+            // Modal
+            const modal = document.getElementById('customer-modal');
+            const modalTitle = document.getElementById('customer-modal-title');
+            const modalBody = document.getElementById('customer-detail-body');
+            const modalClose = document.getElementById('customer-modal-close');
+
+            // ============================================================
+            // LOAD DATA
+            // ============================================================
+            function loadCustomers() {
+                customers = db.get('KHACH_HANG') || [];
+                // Get order counts for each customer
+                const orders = db.get('DON_HANG') || [];
+                const orderCountMap = {};
+                orders.forEach(o => {
+                    if (o.ma_khach_hang) {
+                        orderCountMap[o.ma_khach_hang] = (orderCountMap[o.ma_khach_hang] || 0) + 1;
+                    }
+                });
+                customers = customers.map(c => ({
+                    ...c,
+                    orderCount: orderCountMap[c.ma_khach_hang] || 0
+                }));
+                filteredCustomers = [...customers];
+                totalCustomers.textContent = `Total: ${customers.length}`;
+                applyFilters();
+            }
+
+            // ============================================================
+            // FILTER
+            // ============================================================
+            function applyFilters() {
+                const keyword = searchInput.value.toLowerCase().trim();
+                const status = statusFilter.value;
+                const provider = providerFilter.value;
+
+                filteredCustomers = customers.filter(c => {
+                    // Search
+                    if (keyword) {
+                        const nameMatch = (c.ho_ten || '').toLowerCase().includes(keyword);
+                        const emailMatch = (c.email || '').toLowerCase().includes(keyword);
+                        const phoneMatch = (c.so_dien_thoai || '').includes(keyword);
+                        if (!nameMatch && !emailMatch && !phoneMatch) return false;
+                    }
+
+                    // Status
+                    if (status && c.trang_thai !== status) return false;
+
+                    // Provider - check if user has social login info
+                    if (provider) {
+                        const users = JSON.parse(localStorage.getItem('medicare_users') || '[]');
+                        const user = users.find(u => u.email === c.email);
+                        const userProvider = user ? user.provider : 'email';
+                        if (provider !== userProvider) return false;
+                    }
+
+                    return true;
+                });
+
+                currentPage = 1;
+                renderTable();
+            }
+
+            // ============================================================
+            // RENDER TABLE
+            // ============================================================
+            function renderTable() {
+                const start = (currentPage - 1) * pageSize;
+                const end = start + pageSize;
+                const pageItems = filteredCustomers.slice(start, end);
+
+                if (pageItems.length === 0) {
+                    tbody.innerHTML =
+                        `<tr><td colspan="7" style="text-align: center; padding: 40px; color: #9ca3af;">No customers found</td></tr>`;
+                } else {
+                    tbody.innerHTML = pageItems.map(c => {
+                        const statusClass = c.trang_thai === 'active' ? 'active' : c.trang_thai === 'banned' ?
+                            'banned' : 'inactive';
+                        const statusLabel = c.trang_thai === 'active' ? 'Active' : c.trang_thai === 'banned' ?
+                            'Banned' : 'Inactive';
+                        const avatar =
+                            `https://ui-avatars.com/api/?name=${encodeURIComponent(c.ho_ten || 'User')}&background=0d6efd&color=fff&size=40`;
+                        const joined = c.ngay_tao ? new Date(c.ngay_tao).toLocaleDateString('vi-VN') : 'N/A';
+
+                        return `
+                            <tr>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <img src="${avatar}" alt="${c.ho_ten}" class="customer-avatar">
+                                        <div>
+                                            <div class="customer-name-cell">${c.ho_ten || 'Unknown'}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><div class="customer-email-cell">${c.email || 'N/A'}</div></td>
+                                <td>${c.so_dien_thoai || 'N/A'}</td>
+                                <td><span class="status-badge-customer ${statusClass}">${statusLabel}</span></td>
+                                <td><span class="customer-orders-count">${c.orderCount}</span></td>
+                                <td><span class="customer-joined">${joined}</span></td>
+                                <td>
+                                    <button class="btn-view-customer" data-id="${c.ma_khach_hang}" style="border: none; background: var(--primary-blue); color: white; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px;">
+                                        <i class="fas fa-eye"></i> View
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+
+                // Pagination
+                const total = filteredCustomers.length;
+                const totalPages = Math.ceil(total / pageSize);
+                paginationInfo.textContent = `Showing ${start + 1}-${Math.min(end, total)} of ${total} customers`;
+
+                let controlsHtml = '';
+                if (currentPage > 1) {
+                    controlsHtml +=
+                        `<button class="btn-outline" style="padding: 6px 12px;" onclick="window.__adminCustomers.goToPage(${currentPage - 1})">‹</button>`;
+                }
+                for (let i = 1; i <= totalPages; i++) {
+                    controlsHtml +=
+                        `<button class="${i === currentPage ? 'btn-primary' : 'btn-outline'}" style="padding: 6px 12px; min-width: 36px;" onclick="window.__adminCustomers.goToPage(${i})">${i}</button>`;
+                }
+                if (currentPage < totalPages) {
+                    controlsHtml +=
+                        `<button class="btn-outline" style="padding: 6px 12px;" onclick="window.__adminCustomers.goToPage(${currentPage + 1})">›</button>`;
+                }
+                paginationControls.innerHTML = controlsHtml;
+            }
+
+            // ============================================================
+            // VIEW CUSTOMER DETAIL
+            // ============================================================
+            function viewCustomer(id) {
+                const customer = db.findOne('KHACH_HANG', { ma_khach_hang: parseInt(id) });
+                if (!customer) {
+                    showToast('Customer not found!', 'error');
+                    return;
+                }
+
+                // Get orders for this customer
+                const orders = db.get('DON_HANG', { ma_khach_hang: parseInt(id) });
+                const orderCount = orders.length;
+                const totalSpent = orders.reduce((sum, o) => sum + (o.tong_tien_thanh_toan || 0), 0);
+
+                // Get user provider info
+                const users = JSON.parse(localStorage.getItem('medicare_users') || '[]');
+                const user = users.find(u => u.email === customer.email);
+                const provider = user ? user.provider : 'email';
+                const providerLabels = {
+                    email: 'Email',
+                    google: 'Google',
+                    facebook: 'Facebook'
+                };
+                const providerClasses = {
+                    email: 'email',
+                    google: 'google',
+                    facebook: 'facebook'
+                };
+
+                const joined = customer.ngay_tao ? new Date(customer.ngay_tao).toLocaleDateString('vi-VN') : 'N/A';
+                const statusClass = customer.trang_thai === 'active' ? 'active' : customer.trang_thai === 'banned' ?
+                    'banned' : 'inactive';
+                const statusLabel = customer.trang_thai === 'active' ? 'Active' : customer.trang_thai === 'banned' ?
+                    'Banned' : 'Inactive';
+
+                modalTitle.textContent = `Customer: ${customer.ho_ten || 'Unknown'}`;
+
+                let recentOrdersHtml = '';
+                if (orders.length > 0) {
+                    const recentOrders = orders.sort((a, b) => new Date(b.ngay_dat) - new Date(a.ngay_dat)).slice(0, 5);
+                    recentOrdersHtml = `
+                        <div class="customer-recent-orders">
+                            <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #374151;">
+                                <i class="fas fa-clock-rotate-left"></i> Recent Orders (${orders.length} total)
+                            </h4>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Date</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${recentOrders.map(o => `
+                                        <tr>
+                                            <td style="font-weight: 600; color: var(--primary-blue);">#${o.ma_don_hang || 'N/A'}</td>
+                                            <td>${o.ngay_dat ? new Date(o.ngay_dat).toLocaleDateString('vi-VN') : 'N/A'}</td>
+                                            <td style="font-weight: 600;">${formatCurrency(o.tong_tien_thanh_toan || 0)}</td>
+                                            <td><span class="status-badge-customer ${o.trang_thai_don === 'da_giao' ? 'active' : 'inactive'}">${o.trang_thai_don || 'N/A'}</span></td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                } else {
+                    recentOrdersHtml = `<p style="color: #9ca3af; margin-top: 12px;">No orders yet.</p>`;
+                }
+
+                modalBody.innerHTML = `
+                    <div class="customer-detail-grid">
+                        <div class="customer-detail-item">
+                            <div class="label">Full Name</div>
+                            <div class="value">${customer.ho_ten || 'N/A'}</div>
+                        </div>
+                        <div class="customer-detail-item">
+                            <div class="label">Email</div>
+                            <div class="value">${customer.email || 'N/A'}</div>
+                        </div>
+                        <div class="customer-detail-item">
+                            <div class="label">Phone</div>
+                            <div class="value">${customer.so_dien_thoai || 'N/A'}</div>
+                        </div>
+                        <div class="customer-detail-item">
+                            <div class="label">Status</div>
+                            <div class="value"><span class="status-badge-customer ${statusClass}">${statusLabel}</span></div>
+                        </div>
+                        <div class="customer-detail-item">
+                            <div class="label">Provider</div>
+                            <div class="value"><span class="provider-badge ${providerClasses[provider] || 'email'}">${providerLabels[provider] || 'Email'}</span></div>
+                        </div>
+                        <div class="customer-detail-item">
+                            <div class="label">Joined</div>
+                            <div class="value">${joined}</div>
+                        </div>
+                        <div class="customer-detail-item">
+                            <div class="label">Total Orders</div>
+                            <div class="value" style="font-size: 18px; color: var(--primary-blue);">${orderCount}</div>
+                        </div>
+                        <div class="customer-detail-item">
+                            <div class="label">Total Spent</div>
+                            <div class="value" style="font-size: 18px; color: #10b981;">${formatCurrency(totalSpent)}</div>
+                        </div>
+                        <div class="customer-detail-item" style="grid-column: 1/-1;">
+                            <div class="label">Address</div>
+                            <div class="value">${customer.dia_chi || 'No address provided'}</div>
+                        </div>
+                    </div>
+                    ${recentOrdersHtml}
+                    <div class="modal-actions">
+                        ${customer.trang_thai === 'active'
+                        ? `<button class="btn-danger" onclick="window.__adminCustomers.banCustomer(${customer.ma_khach_hang})"><i class="fas fa-ban"></i> Ban Customer</button>`
+                        : `<button class="btn-success" onclick="window.__adminCustomers.unbanCustomer(${customer.ma_khach_hang})"><i class="fas fa-check"></i> Unban Customer</button>`
+                    }
+                        <button class="btn-outline" onclick="window.__adminCustomers.closeModal()">Close</button>
+                    </div>
+                `;
+
+                modal.classList.add('active');
+            }
+
+            // ============================================================
+            // BAN / UNBAN
+            // ============================================================
+            function banCustomer(id) {
+                if (confirm('Are you sure you want to ban this customer?')) {
+                    db.update('KHACH_HANG', { ma_khach_hang: parseInt(id) }, { trang_thai: 'banned' });
+                    showToast('🚫 Customer banned successfully!');
+                    closeModal();
+                    loadCustomers();
+                }
+            }
+
+            function unbanCustomer(id) {
+                if (confirm('Are you sure you want to unban this customer?')) {
+                    db.update('KHACH_HANG', { ma_khach_hang: parseInt(id) }, { trang_thai: 'active' });
+                    showToast('✅ Customer unbanned successfully!');
+                    closeModal();
+                    loadCustomers();
+                }
+            }
+
+            function closeModal() {
+                modal.classList.remove('active');
+            }
+
+            // ============================================================
+            // HELPER
+            // ============================================================
+            function formatCurrency(amount) {
+                if (!amount) return '0 VNĐ';
+                return amount.toLocaleString('vi-VN') + ' VNĐ';
+            }
+
+            function showToast(msg, type = 'success') {
+                const existing = document.querySelector('.admin-toast');
+                if (existing) existing.remove();
+
+                const toast = document.createElement('div');
+                toast.className = 'admin-toast';
+                const colors = {
+                    success: '#1f2937',
+                    error: '#dc2626'
+                };
+                toast.style.background = colors[type] || '#1f2937';
+                toast.textContent = msg;
+                document.body.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.animation = 'toastOut 0.4s ease forwards';
+                    setTimeout(() => toast.remove(), 400);
+                }, 3000);
+            }
+
+            // ============================================================
+            // DROPDOWN MENU
+            // ============================================================
+            const profileContainer = document.getElementById('user-profile-dropdown');
+            const dropdownMenu = document.getElementById('dropdown-menu');
+            const avatarTrigger = document.getElementById('avatar-trigger');
+            const userInfoTrigger = document.getElementById('user-info-trigger');
+            const btnLogout = document.getElementById('btn-logout');
+
+            let isOpen = false;
+
+            function toggleDropdown(e) {
+                e.stopPropagation();
+                isOpen = !isOpen;
+                dropdownMenu.classList.toggle('active', isOpen);
+                if (avatarTrigger) avatarTrigger.classList.toggle('active', isOpen);
+            }
+
+            function closeDropdown() {
+                isOpen = false;
+                dropdownMenu.classList.remove('active');
+                if (avatarTrigger) avatarTrigger.classList.remove('active');
+            }
+
+            if (avatarTrigger) avatarTrigger.addEventListener('click', toggleDropdown);
+            if (userInfoTrigger) userInfoTrigger.addEventListener('click', toggleDropdown);
+
+            document.addEventListener('click', function (e) {
+                if (profileContainer && !profileContainer.contains(e.target)) {
+                    closeDropdown();
+                }
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeDropdown();
+            });
+
+            if (btnLogout) {
+                btnLogout.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    if (confirm('Bạn có chắc muốn đăng xuất?')) {
+                        localStorage.removeItem('medicare_current_user');
+                        localStorage.removeItem('medicare_users');
+                        window.location.href = '../auth/login.html';
+                    }
+                });
+            }
+
+            // ============================================================
+            // EXPOSE
+            // ============================================================
+            window.__adminCustomers = {
+                goToPage: function (page) {
+                    currentPage = page;
+                    renderTable();
+                },
+                viewCustomer: viewCustomer,
+                banCustomer: banCustomer,
+                unbanCustomer: unbanCustomer,
+                closeModal: closeModal
+            };
+
+            // ============================================================
+            // EVENT LISTENERS
+            // ============================================================
+            searchInput.addEventListener('input', applyFilters);
+            statusFilter.addEventListener('change', applyFilters);
+            providerFilter.addEventListener('change', applyFilters);
+
+            modalClose.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+
+            tbody.addEventListener('click', (e) => {
+                const target = e.target.closest('button');
+                if (target && target.classList.contains('btn-view-customer')) {
+                    viewCustomer(target.dataset.id);
+                }
+            });
+
+            document.getElementById('btn-export-customers').addEventListener('click', function () {
+                // Export as CSV
+                const headers = ['ID', 'Name', 'Email', 'Phone', 'Status', 'Orders', 'Joined'];
+                const rows = customers.map(c => [
+                    c.ma_khach_hang,
+                    c.ho_ten || '',
+                    c.email || '',
+                    c.so_dien_thoai || '',
+                    c.trang_thai || '',
+                    c.orderCount || 0,
+                    c.ngay_tao ? new Date(c.ngay_tao).toLocaleDateString('vi-VN') : ''
+                ]);
+
+                let csv = headers.join(',') + '\n';
+                rows.forEach(row => {
+                    csv += row.map(v => `"${v}"`).join(',') + '\n';
+                });
+
+                const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `customers_${new Date().toISOString().slice(0, 10)}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('📊 Customers exported successfully!');
+            });
+
+            // ============================================================
+            // INIT
+            // ============================================================
+            loadCustomers();
+
+            // Add toast animation styles
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes toastOut {
+                    from { opacity: 1; transform: translateX(-50%) translateY(0); }
+                    to { opacity: 0; transform: translateX(-50%) translateY(20px); }
+                }
+            `;
+            document.head.appendChild(style);
+
+            console.log('✅ Customer Management ready!');
+
+        })();
+    </script>
+</body>
+
+</html>

@@ -38,10 +38,18 @@
                 <button type="button" class="btn-social btn-google" id="btn-google-mode">
                     <span class="social-icon">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
-                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                            <path
+                                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
+                                fill="#4285F4" />
+                            <path
+                                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                                fill="#34A853" />
+                            <path
+                                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                                fill="#FBBC05" />
+                            <path
+                                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                                fill="#EA4335" />
                         </svg>
                     </span>
                     Đăng nhập bằng Google
@@ -49,7 +57,8 @@
                 <button type="button" class="btn-social btn-facebook" id="btn-facebook-mode">
                     <span class="social-icon">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            <path
+                                d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                         </svg>
                     </span>
                     Đăng nhập bằng Facebook
@@ -63,21 +72,25 @@
             <!-- Dynamic Form -->
             <form id="login-form">
                 <!-- Provider indicator -->
-                <div id="provider-indicator" style="display:none; margin-bottom:20px; padding:12px 16px; border-radius:10px; align-items:center; gap:10px; font-size:14px; font-weight:600;">
+                <div id="provider-indicator"
+                    style="display:none; margin-bottom:20px; padding:12px 16px; border-radius:10px; align-items:center; gap:10px; font-size:14px; font-weight:600;">
                     <span id="provider-icon"></span>
                     <span id="provider-text"></span>
-                    <button type="button" id="provider-clear" style="margin-left:auto; background:none; border:none; cursor:pointer; font-size:16px; color:#9ca3af; padding:2px 6px; border-radius:4px; transition:color 0.2s;">&times;</button>
+                    <button type="button" id="provider-clear"
+                        style="margin-left:auto; background:none; border:none; cursor:pointer; font-size:16px; color:#9ca3af; padding:2px 6px; border-radius:4px; transition:color 0.2s;">&times;</button>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label" for="email" id="label-email">Email hoặc Số điện thoại</label>
-                    <input type="text" id="email" class="form-control" placeholder="Nhập email hoặc số điện thoại..." required>
+                    <input type="text" id="email" class="form-control" placeholder="Nhập email hoặc số điện thoại..."
+                        required>
                 </div>
 
                 <div class="form-group" id="password-group">
                     <label class="form-label" for="password">Mật khẩu</label>
                     <div class="password-wrapper">
-                        <input type="password" id="password" class="form-control" placeholder="Nhập mật khẩu..." required>
+                        <input type="password" id="password" class="form-control" placeholder="Nhập mật khẩu..."
+                            required>
                         <button type="button" class="password-toggle" onclick="togglePassword('password', this)">
                             <i class="fa-regular fa-eye"></i>
                         </button>
@@ -117,212 +130,326 @@
                 <span class="logo-text">MEDICARE</span>
             </a>
             <p class="footer-text">
-                Hệ thống nhà thuốc hàng đầu Việt Nam, cam kết mang lại giải pháp chăm sóc sức khỏe tốt nhất cho cộng đồng.
+                Hệ thống nhà thuốc hàng đầu Việt Nam, cam kết mang lại giải pháp chăm sóc sức khỏe tốt nhất cho cộng
+                đồng.
             </p>
         </div>
     </footer>
 
+    <!-- ===== LOAD DB.JS TRƯỚC KHI CHẠY SCRIPT ===== -->
+    <script src="../db.js"></script>
+
     <script>
-    (function() {
-        'use strict';
+        (function () {
+            'use strict';
 
-        // ===== STATE =====
-        let currentProvider = 'email';
-
-        // ===== ELEMENTS =====
-        const btnGoogle = document.getElementById('btn-google-mode');
-        const btnFacebook = document.getElementById('btn-facebook-mode');
-        const indicator = document.getElementById('provider-indicator');
-        const providerIcon = document.getElementById('provider-icon');
-        const providerText = document.getElementById('provider-text');
-        const providerClear = document.getElementById('provider-clear');
-        const labelEmail = document.getElementById('label-email');
-        const emailInput = document.getElementById('email');
-        const passwordGroup = document.getElementById('password-group');
-        const formOptions = document.getElementById('form-options');
-        const btnSubmit = document.getElementById('btn-submit');
-        const dividerEl = document.querySelector('.auth-divider span');
-
-        // ===== HELPERS =====
-        function getUsers() {
-            return JSON.parse(localStorage.getItem('medicare_users') || '[]');
-        }
-
-        function setCurrentUser(user) {
-            localStorage.setItem('medicare_current_user', JSON.stringify(user));
-        }
-
-        function showToast(msg, type) {
-            const toast = document.getElementById('auth-toast');
-            const toastMsg = document.getElementById('auth-toast-msg');
-            const icon = toast.querySelector('i');
-            toast.className = 'auth-toast ' + type;
-            icon.className = type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark';
-            toastMsg.textContent = msg;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-
-        window.togglePassword = function(inputId, btn) {
-            const input = document.getElementById(inputId);
-            const icon = btn.querySelector('i');
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.className = 'fa-regular fa-eye-slash';
+            // ===== KIỂM TRA DB ĐÃ LOAD CHƯA =====
+            if (typeof window.PharmacyDB === 'undefined') {
+                console.warn('⚠️ PharmacyDB chưa được load! Đang thử tải lại...');
+                const script = document.createElement('script');
+                script.src = '../db.js';
+                script.onload = function () {
+                    console.log('✅ db.js đã được tải thành công!');
+                    initApp();
+                };
+                script.onerror = function () {
+                    alert('❌ Không thể tải database! Vui lòng kiểm tra file db.js');
+                };
+                document.head.appendChild(script);
             } else {
-                input.type = 'password';
-                icon.className = 'fa-regular fa-eye';
-            }
-        };
-
-        // ===== SWITCH MODE =====
-        function switchMode(provider) {
-            currentProvider = provider;
-
-            btnGoogle.classList.toggle('active', provider === 'google');
-            btnFacebook.classList.toggle('active', provider === 'facebook');
-
-            if (provider === 'google') {
-                indicator.style.display = 'flex';
-                indicator.style.background = '#e8f0fe';
-                indicator.style.color = '#1a73e8';
-                indicator.style.border = '1px solid #a8c7fa';
-                providerIcon.innerHTML = '<i class="fa-brands fa-google" style="color:#4285F4;"></i>';
-                providerText.textContent = 'Đăng nhập bằng tài khoản Google';
-                labelEmail.textContent = 'Email Google';
-                emailInput.placeholder = 'Nhập email Google đã đăng ký...';
-                passwordGroup.style.display = 'none';
-                formOptions.style.display = 'none';
-                btnSubmit.innerHTML = '<i class="fa-brands fa-google"></i> Đăng nhập bằng Google';
-                btnSubmit.style.background = '#4285F4';
-                dividerEl.textContent = 'hoặc đăng nhập bằng email';
-            } else if (provider === 'facebook') {
-                indicator.style.display = 'flex';
-                indicator.style.background = '#e7f0ff';
-                indicator.style.color = '#1877F2';
-                indicator.style.border = '1px solid #a3c9ff';
-                providerIcon.innerHTML = '<i class="fa-brands fa-facebook-f" style="color:#1877F2;"></i>';
-                providerText.textContent = 'Đăng nhập bằng tài khoản Facebook';
-                labelEmail.textContent = 'Email Facebook';
-                emailInput.placeholder = 'Nhập email Facebook đã đăng ký...';
-                passwordGroup.style.display = 'none';
-                formOptions.style.display = 'none';
-                btnSubmit.innerHTML = '<i class="fa-brands fa-facebook-f"></i> Đăng nhập bằng Facebook';
-                btnSubmit.style.background = '#1877F2';
-                dividerEl.textContent = 'hoặc đăng nhập bằng email';
-            } else {
-                indicator.style.display = 'none';
-                labelEmail.textContent = 'Email hoặc Số điện thoại';
-                emailInput.placeholder = 'Nhập email hoặc số điện thoại...';
-                passwordGroup.style.display = 'block';
-                formOptions.style.display = 'flex';
-                btnSubmit.innerHTML = 'Đăng nhập';
-                btnSubmit.style.background = '#0d6efd';
-                dividerEl.textContent = 'hoặc đăng nhập bằng email';
+                initApp();
             }
 
-            emailInput.value = '';
-            emailInput.focus();
-        }
+            function initApp() {
+                console.log('✅ Login App ready!');
 
-        btnGoogle.addEventListener('click', () => switchMode(currentProvider === 'google' ? 'email' : 'google'));
-        btnFacebook.addEventListener('click', () => switchMode(currentProvider === 'facebook' ? 'email' : 'facebook'));
-        providerClear.addEventListener('click', () => switchMode('email'));
+                // ===== STATE =====
+                let currentProvider = 'email';
 
-        // ===== CHECK IF JUST REGISTERED =====
-        const params = new URLSearchParams(window.location.search);
-        const registeredEmail = params.get('registered');
-        const registeredProvider = params.get('provider');
-        if (registeredEmail) {
-            if (registeredProvider === 'google') {
-                switchMode('google');
-                emailInput.value = registeredEmail;
-                showToast('✅ Đăng ký Google thành công! Nhập email để đăng nhập.', 'success');
-            } else if (registeredProvider === 'facebook') {
-                switchMode('facebook');
-                emailInput.value = registeredEmail;
-                showToast('✅ Đăng ký Facebook thành công! Nhập email để đăng nhập.', 'success');
-            } else {
-                emailInput.value = registeredEmail;
-                showToast('✅ Đăng ký thành công! Hãy đăng nhập.', 'success');
-            }
-        }
+                // ===== ELEMENTS =====
+                const btnGoogle = document.getElementById('btn-google-mode');
+                const btnFacebook = document.getElementById('btn-facebook-mode');
+                const indicator = document.getElementById('provider-indicator');
+                const providerIcon = document.getElementById('provider-icon');
+                const providerText = document.getElementById('provider-text');
+                const providerClear = document.getElementById('provider-clear');
+                const labelEmail = document.getElementById('label-email');
+                const emailInput = document.getElementById('email');
+                const passwordGroup = document.getElementById('password-group');
+                const formOptions = document.getElementById('form-options');
+                const btnSubmit = document.getElementById('btn-submit');
+                const dividerEl = document.querySelector('.auth-divider span');
 
-        // ===== FORM SUBMIT =====
-        document.getElementById('login-form').addEventListener('submit', function(e) {
-            e.preventDefault();
+                // ===== HELPERS =====
+                function getUsers() {
+                    // Lấy từ medicare_users
+                    let users = JSON.parse(localStorage.getItem('medicare_users') || '[]');
 
-            const email = emailInput.value.trim();
+                    // Nếu không có users, thử tạo từ db
+                    if (users.length === 0) {
+                        try {
+                            const db = window.PharmacyDB;
+                            if (db) {
+                                // Lấy KHACH_HANG
+                                const customers = db.get('KHACH_HANG') || [];
+                                const customerUsers = customers.map(kh => ({
+                                    fullname: kh.ho_ten,
+                                    email: kh.email,
+                                    password: kh.mat_khau,
+                                    provider: 'email',
+                                    avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(kh.ho_ten)}&background=0d6efd&color=fff&size=128`
+                                }));
 
-            if (!email) {
-                showToast('Vui lòng nhập email!', 'error');
-                return;
-            }
+                                // Lấy QUAN_LY (admin)
+                                const admins = db.get('QUAN_LY') || [];
+                                const adminUsers = admins.map(ad => ({
+                                    fullname: ad.ho_ten,
+                                    email: ad.email,
+                                    password: ad.mat_khau,
+                                    provider: 'email',
+                                    avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(ad.ho_ten)}&background=0d6efd&color=fff&size=128`,
+                                    isAdmin: true
+                                }));
 
-            const users = getUsers();
+                                // Lấy NHAN_VIEN (nhân viên)
+                                const employees = db.get('NHAN_VIEN') || [];
+                                const employeeUsers = employees.map(em => ({
+                                    fullname: em.ho_ten,
+                                    email: em.email,
+                                    password: em.mat_khau,
+                                    provider: 'email',
+                                    avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(em.ho_ten)}&background=0d6efd&color=fff&size=128`,
+                                    isAdmin: false,
+                                    isEmployee: true
+                                }));
 
-            if (currentProvider === 'email') {
-                // Email login
-                const password = document.getElementById('password').value;
-                if (!password) {
-                    showToast('Vui lòng nhập mật khẩu!', 'error');
-                    return;
-                }
-
-                const user = users.find(u => u.email === email);
-                if (!user) {
-                    showToast('Tài khoản không tồn tại! Vui lòng đăng ký.', 'error');
-                    return;
-                }
-                if (user.provider !== 'email') {
-                    const pLabel = user.provider === 'google' ? 'Google' : 'Facebook';
-                    showToast('Tài khoản này đăng ký bằng ' + pLabel + '. Hãy bấm nút ' + pLabel + ' ở trên!', 'error');
-                    return;
-                }
-                if (user.password !== password) {
-                    showToast('Mật khẩu không đúng!', 'error');
-                    return;
-                }
-
-                // Success
-                setCurrentUser({
-                    fullname: user.fullname,
-                    email: user.email,
-                    provider: user.provider,
-                    avatar: user.avatar,
-                });
-
-            } else {
-                // Social login (google / facebook)
-                const user = users.find(u => u.email === email && u.provider === currentProvider);
-                if (!user) {
-                    const otherUser = users.find(u => u.email === email);
-                    if (otherUser) {
-                        const pLabel = otherUser.provider === 'google' ? 'Google' : otherUser.provider === 'facebook' ? 'Facebook' : 'Email';
-                        showToast('Email này đăng ký bằng ' + pLabel + '. Hãy dùng phương thức đó!', 'error');
-                    } else {
-                        showToast('Chưa có tài khoản với email này! Hãy đăng ký trước.', 'error');
+                                users = [...customerUsers, ...adminUsers, ...employeeUsers];
+                                localStorage.setItem('medicare_users', JSON.stringify(users));
+                                console.log('✅ Đã tạo users từ db:', users.length);
+                            }
+                        } catch (e) {
+                            console.warn('Không thể tải db:', e);
+                        }
                     }
-                    return;
+
+                    return users;
                 }
 
-                // Success
-                setCurrentUser({
-                    fullname: user.fullname,
-                    email: user.email,
-                    provider: user.provider,
-                    avatar: user.avatar,
+                function setCurrentUser(user) {
+                    localStorage.setItem('medicare_current_user', JSON.stringify(user));
+                }
+
+                function showToast(msg, type) {
+                    const toast = document.getElementById('auth-toast');
+                    const toastMsg = document.getElementById('auth-toast-msg');
+                    const icon = toast.querySelector('i');
+                    toast.className = 'auth-toast ' + type;
+                    icon.className = type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark';
+                    toastMsg.textContent = msg;
+                    toast.classList.add('show');
+                    setTimeout(() => toast.classList.remove('show'), 3000);
+                }
+
+                window.togglePassword = function (inputId, btn) {
+                    const input = document.getElementById(inputId);
+                    const icon = btn.querySelector('i');
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.className = 'fa-regular fa-eye-slash';
+                    } else {
+                        input.type = 'password';
+                        icon.className = 'fa-regular fa-eye';
+                    }
+                };
+
+                // ===== SWITCH MODE =====
+                function switchMode(provider) {
+                    currentProvider = provider;
+
+                    btnGoogle.classList.toggle('active', provider === 'google');
+                    btnFacebook.classList.toggle('active', provider === 'facebook');
+
+                    if (provider === 'google') {
+                        indicator.style.display = 'flex';
+                        indicator.style.background = '#e8f0fe';
+                        indicator.style.color = '#1a73e8';
+                        indicator.style.border = '1px solid #a8c7fa';
+                        providerIcon.innerHTML = '<i class="fa-brands fa-google" style="color:#4285F4;"></i>';
+                        providerText.textContent = 'Đăng nhập bằng tài khoản Google';
+                        labelEmail.textContent = 'Email Google';
+                        emailInput.placeholder = 'Nhập email Google đã đăng ký...';
+                        passwordGroup.style.display = 'none';
+                        formOptions.style.display = 'none';
+                        btnSubmit.innerHTML = '<i class="fa-brands fa-google"></i> Đăng nhập bằng Google';
+                        btnSubmit.style.background = '#4285F4';
+                        dividerEl.textContent = 'hoặc đăng nhập bằng email';
+                    } else if (provider === 'facebook') {
+                        indicator.style.display = 'flex';
+                        indicator.style.background = '#e7f0ff';
+                        indicator.style.color = '#1877F2';
+                        indicator.style.border = '1px solid #a3c9ff';
+                        providerIcon.innerHTML = '<i class="fa-brands fa-facebook-f" style="color:#1877F2;"></i>';
+                        providerText.textContent = 'Đăng nhập bằng tài khoản Facebook';
+                        labelEmail.textContent = 'Email Facebook';
+                        emailInput.placeholder = 'Nhập email Facebook đã đăng ký...';
+                        passwordGroup.style.display = 'none';
+                        formOptions.style.display = 'none';
+                        btnSubmit.innerHTML = '<i class="fa-brands fa-facebook-f"></i> Đăng nhập bằng Facebook';
+                        btnSubmit.style.background = '#1877F2';
+                        dividerEl.textContent = 'hoặc đăng nhập bằng email';
+                    } else {
+                        indicator.style.display = 'none';
+                        labelEmail.textContent = 'Email hoặc Số điện thoại';
+                        emailInput.placeholder = 'Nhập email hoặc số điện thoại...';
+                        passwordGroup.style.display = 'block';
+                        formOptions.style.display = 'flex';
+                        btnSubmit.innerHTML = 'Đăng nhập';
+                        btnSubmit.style.background = '#0d6efd';
+                        dividerEl.textContent = 'hoặc đăng nhập bằng email';
+                    }
+
+                    emailInput.value = '';
+                    emailInput.focus();
+                }
+
+                btnGoogle.addEventListener('click', () => switchMode(currentProvider === 'google' ? 'email' : 'google'));
+                btnFacebook.addEventListener('click', () => switchMode(currentProvider === 'facebook' ? 'email' : 'facebook'));
+                providerClear.addEventListener('click', () => switchMode('email'));
+
+                // ===== CHECK IF JUST REGISTERED =====
+                const params = new URLSearchParams(window.location.search);
+                const registeredEmail = params.get('registered');
+                const registeredProvider = params.get('provider');
+                if (registeredEmail) {
+                    if (registeredProvider === 'google') {
+                        switchMode('google');
+                        emailInput.value = registeredEmail;
+                        showToast('✅ Đăng ký Google thành công! Nhập email để đăng nhập.', 'success');
+                    } else if (registeredProvider === 'facebook') {
+                        switchMode('facebook');
+                        emailInput.value = registeredEmail;
+                        showToast('✅ Đăng ký Facebook thành công! Nhập email để đăng nhập.', 'success');
+                    } else {
+                        emailInput.value = registeredEmail;
+                        showToast('✅ Đăng ký thành công! Hãy đăng nhập.', 'success');
+                    }
+                }
+
+                // ===== FORM SUBMIT =====
+                document.getElementById('login-form').addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    const email = emailInput.value.trim();
+
+                    if (!email) {
+                        showToast('Vui lòng nhập email!', 'error');
+                        return;
+                    }
+
+                    const users = getUsers();
+                    console.log('📋 Danh sách users:', users);
+
+                    if (currentProvider === 'email') {
+                        // Email login
+                        const password = document.getElementById('password').value;
+                        if (!password) {
+                            showToast('Vui lòng nhập mật khẩu!', 'error');
+                            return;
+                        }
+
+                        const user = users.find(u => u.email === email);
+                        if (!user) {
+                            showToast('Tài khoản không tồn tại! Vui lòng đăng ký.', 'error');
+                            return;
+                        }
+                        if (user.provider !== 'email') {
+                            const pLabel = user.provider === 'google' ? 'Google' : 'Facebook';
+                            showToast('Tài khoản này đăng ký bằng ' + pLabel + '. Hãy bấm nút ' + pLabel + ' ở trên!', 'error');
+                            return;
+                        }
+                        if (user.password !== password) {
+                            showToast('Mật khẩu không đúng!', 'error');
+                            return;
+                        }
+
+                        // Success - check if admin
+                        const isAdmin = user.isAdmin === true || email === 'admin@medicare.vn';
+                        const isEmployee = user.isEmployee === true;
+                        let redirectUrl = '../main/index.html';
+
+                        if (isAdmin) {
+                            redirectUrl = '../admin/dashboard.html';
+                        } else if (isEmployee) {
+                            redirectUrl = '../admin/dashboard.html';
+                        }
+
+                        setCurrentUser({
+                            fullname: user.fullname,
+                            email: user.email,
+                            provider: user.provider,
+                            avatar: user.avatar,
+                            isAdmin: isAdmin,
+                            isEmployee: isEmployee
+                        });
+
+                        const roleText = isAdmin ? ' (Quản trị viên)' : isEmployee ? ' (Nhân viên)' : '';
+                        showToast('🎉 Đăng nhập thành công' + roleText + '!', 'success');
+                        setTimeout(() => {
+                            window.location.href = redirectUrl;
+                        }, 1200);
+
+                    } else {
+                        // Social login (google / facebook)
+                        const user = users.find(u => u.email === email && u.provider === currentProvider);
+                        if (!user) {
+                            const otherUser = users.find(u => u.email === email);
+                            if (otherUser) {
+                                const pLabel = otherUser.provider === 'google' ? 'Google' : otherUser.provider === 'facebook' ? 'Facebook' : 'Email';
+                                showToast('Email này đăng ký bằng ' + pLabel + '. Hãy dùng phương thức đó!', 'error');
+                            } else {
+                                showToast('Chưa có tài khoản với email này! Hãy đăng ký trước.', 'error');
+                            }
+                            return;
+                        }
+
+                        // Success - check if admin
+                        const isAdmin = user.isAdmin === true || email === 'admin@medicare.vn';
+                        const isEmployee = user.isEmployee === true;
+                        let redirectUrl = '../main/index.html';
+
+                        if (isAdmin) {
+                            redirectUrl = '../admin/dashboard.html';
+                        } else if (isEmployee) {
+                            redirectUrl = '../admin/dashboard.html';
+                        }
+
+                        setCurrentUser({
+                            fullname: user.fullname,
+                            email: user.email,
+                            provider: user.provider,
+                            avatar: user.avatar,
+                            isAdmin: isAdmin,
+                            isEmployee: isEmployee
+                        });
+
+                        const pLabel = currentProvider === 'google' ? ' Google' : currentProvider === 'facebook' ? ' Facebook' : '';
+                        const roleText = isAdmin ? ' (Quản trị viên)' : isEmployee ? ' (Nhân viên)' : '';
+                        showToast('🎉 Đăng nhập' + pLabel + roleText + ' thành công!', 'success');
+                        setTimeout(() => {
+                            window.location.href = redirectUrl;
+                        }, 1200);
+                    }
                 });
+
+                // ===== TỰ ĐỘNG ĐIỀN TÀI KHOẢN ADMIN CHO TIỆN =====
+                // Nếu đang ở localhost, tự động điền admin
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    emailInput.value = 'admin@medicare.vn';
+                    document.getElementById('password').value = 'admin123';
+                }
             }
 
-            const pLabel = currentProvider === 'google' ? ' Google' : currentProvider === 'facebook' ? ' Facebook' : '';
-            showToast('🎉 Đăng nhập' + pLabel + ' thành công!', 'success');
-            setTimeout(() => {
-                window.location.href = '../main/index.html';
-            }, 1200);
-        });
-
-    })();
+        })();
     </script>
 
 </body>

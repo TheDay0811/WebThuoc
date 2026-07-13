@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicare ERP - Chat với khách hàng</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+    <style>
+        /* ===== CHAT LAYOUT ===== */
+        .chat-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 0;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            min-height: 600px;
+            max-height: 700px;
+        }
+
+        .chat-sidebar {
+            border-right: 1px solid var(--border-color);
+            background: #fafbfc;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-sidebar-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            background: white;
+        }
+
+        .chat-sidebar-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chat-sidebar-header .badge-msg {
+            background: #ef4444;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .chat-search {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .chat-search input {
+            width: 100%;
+            padding: 8px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .chat-search input:focus {
+            border-color: var(--primary-blue);
+        }
+
+        .chat-contact-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+
+        .chat-contact-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .chat-contact-list::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 4px;
+        }
+
+        /* ===== CONTACT ITEM ===== */
+        .chat-contact {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .chat-contact:hover {
+            background: #f3f4f6;
+        }
+
+        .chat-contact.active {
+            background: #eff6ff;
+            border-left-color: var(--primary-blue);
+        }
+
+        .chat-contact .contact-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--primary-blue);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .chat-contact .contact-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .chat-contact .contact-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .chat-contact .contact-last-msg {
+            font-size: 12px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-contact .contact-time {
+            font-size: 11px;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .chat-contact .unread-badge {
+            background: #ef4444;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            min-width: 20px;
+            height: 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5px;
+        }
+
+        /* ===== CHAT MAIN ===== */
+        .chat-main {
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+
+        .chat-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-header .chat-user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-header .chat-user-info .avatar-sm {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--primary-blue);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .chat-header .chat-user-info .user-name {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .chat-header .chat-user-info .user-email {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .chat-header .chat-actions button {
+            border: none;
+            background: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            font-size: 16px;
+        }
+
+        .chat-header .chat-actions button:hover {
+            background: #f3f4f6;
+            color: #1a1a1a;
+        }
+
+        /* ===== CHAT MESSAGES ===== */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #f9fafb;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 4px;
+        }
+
+        .chat-msg {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 14px;
+            font-size: 14px;
+            line-height: 1.5;
+            animation: msgIn 0.3s ease;
+        }
+
+        @keyframes msgIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .chat-msg.received {
+            align-self: flex-start;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-bottom-left-radius: 4px;
+            color: #1a1a1a;
+        }
+
+        .chat-msg.sent {
+            align-self: flex-end;
+            background: var(--primary-blue);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-msg .msg-time {
+            font-size: 10px;
+            opacity: 0.6;
+            margin-top: 4px;
+            display: block;
+            text-align: right;
+        }
+
+        .chat-msg.sent .msg-time {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .chat-msg.received .msg-time {
+            color: var(--text-muted);
+        }
+
+        .chat-msg .msg-sender {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--primary-blue);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .chat-msg.sent .msg-sender {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* ===== EMPTY STATES ===== */
+        .chat-empty {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            padding: 40px;
+        }
+
+        .chat-empty i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .chat-no-selection {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            padding: 60px;
+        }
+
+        .chat-no-selection i {
+            font-size: 56px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .chat-no-selection h3 {
+            font-size: 18px;
+            color: #6b7280;
+        }
+
+        .chat-no-selection p {
+            font-size: 14px;
+            color: #9ca3af;
+        }
+
+        /* ===== CHAT INPUT ===== */
+        .chat-input-area {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 12px;
+            background: white;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            font-size: 14px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .chat-input-area input:focus {
+            border-color: var(--primary-blue);
+        }
+
+        .chat-input-area .btn-send {
+            padding: 10px 24px;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chat-input-area .btn-send:hover {
+            background: var(--primary-hover);
+        }
+
+        .chat-input-area .btn-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .chat-layout {
+                grid-template-columns: 1fr;
+                max-height: none;
+                min-height: auto;
+            }
+
+            .chat-sidebar {
+                max-height: 300px;
+            }
+
+            .chat-main {
+                min-height: 400px;
+            }
+
+            .chat-header {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .chat-messages {
+                padding: 12px 16px;
+            }
+
+            .chat-input-area {
+                padding: 12px 16px;
+                flex-wrap: wrap;
+            }
+
+            .chat-input-area input {
+                min-width: 100px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .chat-contact {
+                padding: 10px 14px;
+                gap: 10px;
+            }
+
+            .chat-contact .contact-avatar {
+                width: 36px;
+                height: 36px;
+                font-size: 13px;
+            }
+
+            .chat-sidebar-header {
+                padding: 12px 16px;
+            }
+
+            .chat-search {
+                padding: 8px 12px;
+            }
+
+            .chat-search input {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <a href="dashboard.html" style="text-decoration: none; color: inherit;">
+                    <h2>MEDICARE ERP</h2>
+                    <p>Medicare Admin<br><span>Pharmacy Resource Planning</span></p>
+                </a>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                    <li><a href="medicine.html"><i class="fas fa-pills"></i> Medicine Management</a></li>
+                    <li><a href="category.html"><i class="fas fa-sitemap"></i> Category Management</a></li>
+                    <li><a href="admin.html"><i class="fas fa-shopping-cart"></i> Orders</a></li>
+                    <li><a href="customers.html"><i class="fas fa-users"></i> Customers</a></li>
+                    <li><a href="prescription.html"><i class="fas fa-check-circle"></i> Prescription Approval</a></li>
+                    <li><a href="promotions.html"><i class="fas fa-bullhorn"></i> Promotions</a></li>
+                    <li class="active"><a href="chat.html"><i class="fas fa-comment-dots"></i> Chat với khách hàng</a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div style="padding: 10px 20px; font-size: 12px; color: var(--text-muted); text-align: center;">
+                    <i class="fas fa-sync-alt fa-spin"></i> Tự động cập nhật
+                </div>
+            </div>
+        </aside>
+
+        <!-- ===== MAIN CONTENT ===== -->
+        <main class="main-content">
+
+            <!-- ===== HEADER ===== -->
+            <header class="top-header">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Tìm kiếm...">
+                </div>
+                <div class="header-actions">
+                    <i class="far fa-bell"></i>
+                    <i class="far fa-moon"></i>
+                    <i class="far fa-question-circle"></i>
+
+                    <!-- User Profile -->
+                    <div class="user-profile" id="user-profile-dropdown">
+                        <div class="user-info" id="user-info-trigger" style="cursor:pointer;">
+                            <strong>Admin Profile</strong>
+                            <span>System Administrator</span>
+                        </div>
+                        <div class="avatar-wrapper" id="avatar-trigger" style="cursor:pointer;">
+                            <img src="https://ui-avatars.com/api/?name=Admin&background=0d6efd&color=fff&size=40"
+                                alt="Avatar" class="avatar">
+                            <i class="fas fa-chevron-down chevron-icon"></i>
+                        </div>
+
+                        <!-- Dropdown Menu -->
+                        <div class="dropdown-menu" id="dropdown-menu">
+                            <div class="dropdown-header">
+                                <div class="dropdown-avatar">
+                                    <img src="https://ui-avatars.com/api/?name=Admin&background=0d6efd&color=fff&size=50"
+                                        alt="Avatar">
+                                </div>
+                                <div class="dropdown-user-info">
+                                    <div class="dropdown-name">Admin Profile</div>
+                                    <div class="dropdown-role">System Administrator</div>
+                                    <div class="dropdown-email">admin@medicare.vn</div>
+                                </div>
+                            </div>
+
+                            <div class="dropdown-divider"></div>
+
+                            <a href="dashboard.html" class="dropdown-item">
+                                <i class="fas fa-th-large"></i> <span>Dashboard</span>
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-user"></i> <span>Tài khoản của tôi</span>
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-cog"></i> <span>Cài đặt</span>
+                            </a>
+
+                            <div class="dropdown-divider"></div>
+
+                            <a href="#" class="dropdown-item logout" id="btn-logout">
+                                <i class="fas fa-sign-out-alt"></i> <span>Đăng xuất</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- ===== PAGE CONTENT ===== -->
+            <div class="page-content">
+                <div class="page-header">
+                    <div>
+                        <h1><i class="fas fa-comment-dots" style="color: var(--primary-blue);"></i> Chat với khách hàng
+                        </h1>
+                        <p>Quản lý và trả lời tin nhắn từ khách hàng.</p>
+                    </div>
+                    <div>
+                        <span style="font-size:14px;color:var(--text-muted);" id="total-unread">Chưa đọc: 0</span>
+                    </div>
+                </div>
+
+                <!-- ===== CHAT LAYOUT ===== -->
+                <div class="chat-layout">
+
+                    <!-- Sidebar: Danh sách khách hàng -->
+                    <div class="chat-sidebar">
+                        <div class="chat-sidebar-header">
+                            <h3>
+                                <i class="fas fa-users"></i> Khách hàng
+                                <span class="badge-msg" id="sidebar-unread">0</span>
+                            </h3>
+                        </div>
+                        <div class="chat-search">
+                            <input type="text" id="search-contact" placeholder="Tìm khách hàng...">
+                        </div>
+                        <div class="chat-contact-list" id="contact-list">
+                            <!-- Rendered by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Chat Main -->
+                    <div class="chat-main" id="chat-main">
+                        <!-- Chat Header -->
+                        <div class="chat-header">
+                            <div class="chat-user-info" id="chat-user-info">
+                                <div class="avatar-sm" id="chat-avatar">?</div>
+                                <div>
+                                    <div class="user-name" id="chat-name">Chọn khách hàng</div>
+                                    <div class="user-email" id="chat-email">Để bắt đầu trò chuyện</div>
+                                </div>
+                            </div>
+                            <div class="chat-actions">
+                                <button title="Làm mới" id="btn-refresh-msg"><i class="fas fa-sync"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- Chat Messages -->
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="chat-no-selection">
+                                <i class="fas fa-comment"></i>
+                                <h3>Chọn khách hàng để bắt đầu chat</h3>
+                                <p>Nhấp vào một khách hàng bên trái để xem lịch sử chat</p>
+                            </div>
+                        </div>
+
+                        <!-- Chat Input -->
+                        <div class="chat-input-area">
+                            <input type="text" id="chat-input" placeholder="Nhập tin nhắn..." disabled>
+                            <button class="btn-send" id="btn-send-msg" disabled>
+                                <i class="fas fa-paper-plane"></i> Gửi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script src="../db.js"></script>
+    <script>
+        (function () {
+            'use strict';
+
+            const db = window.PharmacyDB;
+            if (!db) {
+                console.error('❌ PharmacyDB not loaded!');
+                return;
+            }
+
+            // ============================================================
+            // STATE
+            // ============================================================
+            let contacts = [];
+            let currentCustomerId = null;
+            let messages = [];
+            let currentUser = JSON.parse(localStorage.getItem('medicare_current_user') || 'null');
+            let employeeId = 1;
+
+            // ============================================================
+            // DOM REFS
+            // ============================================================
+            const contactList = document.getElementById('contact-list');
+            const chatMessages = document.getElementById('chat-messages');
+            const chatInput = document.getElementById('chat-input');
+            const btnSend = document.getElementById('btn-send-msg');
+            const chatName = document.getElementById('chat-name');
+            const chatEmail = document.getElementById('chat-email');
+            const chatAvatar = document.getElementById('chat-avatar');
+            const searchContact = document.getElementById('search-contact');
+            const sidebarUnread = document.getElementById('sidebar-unread');
+            const totalUnread = document.getElementById('total-unread');
+            const btnRefresh = document.getElementById('btn-refresh-msg');
+
+            // ============================================================
+            // LOAD CONTACTS
+            // ============================================================
+            function loadContacts() {
+                const allMessages = db.get('TIN_NHAN') || [];
+                const customers = db.get('KHACH_HANG') || [];
+
+                const customerIds = [...new Set(allMessages.map(m => m.ma_khach_hang).filter(id => id))];
+
+                contacts = customerIds.map(id => {
+                    const customer = customers.find(c => c.ma_khach_hang === id);
+                    const customerMessages = allMessages.filter(m => m.ma_khach_hang === id);
+                    const lastMsg = customerMessages.sort((a, b) =>
+                        new Date(b.thoi_gian) - new Date(a.thoi_gian)
+                    )[0];
+                    const unread = customerMessages.filter(m => !m.da_doc && m.nguoi_gui === 'khach').length;
+
+                    return {
+                        id: id,
+                        name: customer ? customer.ho_ten : 'Khách hàng #' + id,
+                        email: customer ? customer.email : 'unknown@email.com',
+                        avatar: customer ? customer.ho_ten?.charAt(0) || '?' : '?',
+                        lastMessage: lastMsg ? lastMsg.noi_dung : 'Chưa có tin nhắn',
+                        lastTime: lastMsg ? new Date(lastMsg.thoi_gian) : new Date(),
+                        unread: unread
+                    };
+                });
+
+                contacts.sort((a, b) => b.lastTime - a.lastTime);
+                renderContacts();
+                updateUnreadBadge();
+            }
+
+            // ============================================================
+            // RENDER CONTACTS
+            // ============================================================
+            function renderContacts(filter = '') {
+                const keyword = filter.toLowerCase().trim();
+                let filtered = contacts;
+                if (keyword) {
+                    filtered = contacts.filter(c =>
+                        c.name.toLowerCase().includes(keyword) ||
+                        c.email.toLowerCase().includes(keyword)
+                    );
+                }
+
+                if (filtered.length === 0) {
+                    contactList.innerHTML = `
+                        <div style="text-align:center;padding:40px 20px;color:#9ca3af;">
+                            <i class="fas fa-inbox" style="font-size:32px;display:block;margin-bottom:12px;"></i>
+                            <p>Không có khách hàng nào</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                contactList.innerHTML = filtered.map(c => `
+                    <div class="chat-contact ${currentCustomerId === c.id ? 'active' : ''}" data-id="${c.id}">
+                        <div class="contact-avatar">${c.avatar}</div>
+                        <div class="contact-info">
+                            <div class="contact-name">${c.name}</div>
+                            <div class="contact-last-msg">${c.lastMessage}</div>
+                        </div>
+                        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+                            <span class="contact-time">${formatTime(c.lastTime)}</span>
+                            ${c.unread > 0 ? `<span class="unread-badge">${c.unread}</span>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+
+                document.querySelectorAll('.chat-contact').forEach(el => {
+                    el.addEventListener('click', function () {
+                        const id = parseInt(this.dataset.id);
+                        selectContact(id);
+                    });
+                });
+            }
+
+            // ============================================================
+            // SELECT CONTACT
+            // ============================================================
+            function selectContact(id) {
+                currentCustomerId = id;
+                const contact = contacts.find(c => c.id === id);
+                if (!contact) return;
+
+                chatName.textContent = contact.name;
+                chatEmail.textContent = contact.email;
+                chatAvatar.textContent = contact.avatar;
+
+                chatInput.disabled = false;
+                btnSend.disabled = false;
+
+                loadMessages(id);
+                markAsRead(id);
+                renderContacts(searchContact.value);
+            }
+
+            // ============================================================
+            // LOAD MESSAGES
+            // ============================================================
+            function loadMessages(customerId) {
+                const allMessages = db.get('TIN_NHAN') || [];
+                messages = allMessages
+                    .filter(m => m.ma_khach_hang === customerId)
+                    .sort((a, b) => new Date(a.thoi_gian) - new Date(b.thoi_gian));
+
+                renderMessages();
+            }
+
+            // ============================================================
+            // RENDER MESSAGES
+            // ============================================================
+            function renderMessages() {
+                if (messages.length === 0) {
+                    chatMessages.innerHTML = `
+                        <div class="chat-empty">
+                            <i class="fas fa-comment"></i>
+                            <h3>Chưa có tin nhắn</h3>
+                            <p>Hãy gửi tin nhắn để bắt đầu trò chuyện</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                chatMessages.innerHTML = messages.map(m => {
+                    const isSent = m.nguoi_gui === 'nhan_vien';
+                    const senderName = isSent ? 'Admin' : 'Khách hàng';
+                    const time = new Date(m.thoi_gian).toLocaleString('vi-VN', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                    });
+
+                    return `
+                        <div class="chat-msg ${isSent ? 'sent' : 'received'}">
+                            <span class="msg-sender">${senderName}</span>
+                            ${m.noi_dung}
+                            <span class="msg-time">${time}</span>
+                        </div>
+                    `;
+                }).join('');
+
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            // ============================================================
+            // SEND MESSAGE
+            // ============================================================
+            function sendMessage() {
+                const content = chatInput.value.trim();
+                if (!content || !currentCustomerId) return;
+
+                try {
+                    db.sendMessage(
+                        currentCustomerId,
+                        employeeId,
+                        content,
+                        'nhan_vien'
+                    );
+
+                    const newMsg = {
+                        ma_khach_hang: currentCustomerId,
+                        ma_nhan_vien: employeeId,
+                        noi_dung: content,
+                        nguoi_gui: 'nhan_vien',
+                        thoi_gian: new Date().toISOString(),
+                        da_doc: true
+                    };
+                    messages.push(newMsg);
+
+                    const contact = contacts.find(c => c.id === currentCustomerId);
+                    if (contact) {
+                        contact.lastMessage = content;
+                        contact.lastTime = new Date();
+                        contact.unread = 0;
+                    }
+
+                    renderMessages();
+                    renderContacts(searchContact.value);
+                    chatInput.value = '';
+                    chatInput.focus();
+
+                } catch (error) {
+                    alert('❌ Lỗi gửi tin nhắn: ' + error.message);
+                }
+            }
+
+            // ============================================================
+            // MARK AS READ
+            // ============================================================
+            function markAsRead(customerId) {
+                const allMessages = db.get('TIN_NHAN') || [];
+                const unreadMessages = allMessages.filter(m =>
+                    m.ma_khach_hang === customerId &&
+                    !m.da_doc &&
+                    m.nguoi_gui === 'khach'
+                );
+
+                unreadMessages.forEach(m => {
+                    db.update('TIN_NHAN', { ma_tin_nhan: m.ma_tin_nhan }, { da_doc: true });
+                });
+
+                const contact = contacts.find(c => c.id === customerId);
+                if (contact) contact.unread = 0;
+                updateUnreadBadge();
+            }
+
+            // ============================================================
+            // UPDATE UNREAD BADGE
+            // ============================================================
+            function updateUnreadBadge() {
+                const total = contacts.reduce((sum, c) => sum + c.unread, 0);
+                sidebarUnread.textContent = total;
+                totalUnread.textContent = `Chưa đọc: ${total}`;
+            }
+
+            // ============================================================
+            // FORMAT TIME
+            // ============================================================
+            function formatTime(date) {
+                const now = new Date();
+                const diff = now - date;
+                const minutes = Math.floor(diff / 60000);
+                const hours = Math.floor(diff / 3600000);
+                const days = Math.floor(diff / 86400000);
+
+                if (minutes < 1) return 'Vừa xong';
+                if (minutes < 60) return minutes + ' phút';
+                if (hours < 24) return hours + ' giờ';
+                if (days < 7) return days + ' ngày';
+                return date.toLocaleDateString('vi-VN');
+            }
+
+            // ============================================================
+            // AUTO REFRESH
+            // ============================================================
+            function autoRefresh() {
+                loadContacts();
+                if (currentCustomerId) {
+                    loadMessages(currentCustomerId);
+                }
+            }
+
+            // ============================================================
+            // DROPDOWN MENU
+            // ============================================================
+            const profileContainer = document.getElementById('user-profile-dropdown');
+            const dropdownMenu = document.getElementById('dropdown-menu');
+            const avatarTrigger = document.getElementById('avatar-trigger');
+            const userInfoTrigger = document.getElementById('user-info-trigger');
+            const btnLogout = document.getElementById('btn-logout');
+
+            let isOpen = false;
+
+            function toggleDropdown(e) {
+                e.stopPropagation();
+                isOpen = !isOpen;
+                dropdownMenu.classList.toggle('active', isOpen);
+                if (avatarTrigger) avatarTrigger.classList.toggle('active', isOpen);
+            }
+
+            function closeDropdown() {
+                isOpen = false;
+                dropdownMenu.classList.remove('active');
+                if (avatarTrigger) avatarTrigger.classList.remove('active');
+            }
+
+            if (avatarTrigger) avatarTrigger.addEventListener('click', toggleDropdown);
+            if (userInfoTrigger) userInfoTrigger.addEventListener('click', toggleDropdown);
+
+            document.addEventListener('click', function (e) {
+                if (profileContainer && !profileContainer.contains(e.target)) {
+                    closeDropdown();
+                }
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeDropdown();
+            });
+
+            if (btnLogout) {
+                btnLogout.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    if (confirm('Bạn có chắc muốn đăng xuất?')) {
+                        localStorage.removeItem('medicare_current_user');
+                        localStorage.removeItem('medicare_users');
+                        window.location.href = '../auth/login.html';
+                    }
+                });
+            }
+
+            // ============================================================
+            // EVENT LISTENERS
+            // ============================================================
+            document.addEventListener('DOMContentLoaded', function () {
+                loadContacts();
+
+                searchContact.addEventListener('input', function () {
+                    renderContacts(this.value);
+                });
+
+                btnSend.addEventListener('click', sendMessage);
+                chatInput.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        sendMessage();
+                    }
+                });
+
+                // Refresh button
+                if (btnRefresh) {
+                    btnRefresh.addEventListener('click', autoRefresh);
+                }
+
+                // Auto refresh mỗi 5 giây
+                setInterval(autoRefresh, 5000);
+
+                console.log('✅ Chat admin ready!');
+            });
+
+        })();
+    </script>
+
+</body>
+
+</html>
