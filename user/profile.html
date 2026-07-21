@@ -646,6 +646,10 @@
                             </select>
                         </div>
                     </div>
+                    <div style="margin-bottom: 16px;">
+                        <label style="display:block; margin-bottom:6px; font-size:13px; font-weight:600; color:#374151;">Địa chỉ</label>
+                        <textarea id="edit-address" rows="3" style="width:100%; padding:10px 14px; border:1px solid #d1d5db; border-radius:8px; outline:none; resize:vertical; font-family:inherit; font-size:14px;" placeholder="Nhập địa chỉ của bạn..."></textarea>
+                    </div>
                     <button type="submit" style="width:100%; padding:12px; background:#0d6efd; color:white; border:none; border-radius:8px; font-weight:600; cursor:pointer; margin-top:10px;">Lưu thay đổi</button>
                 </form>
             </div>
@@ -703,6 +707,7 @@
     </footer>
 
     <!-- Script -->
+    <script src="../db.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
@@ -737,6 +742,21 @@
                 return;
             }
 
+            // ===== SYNC FROM PharmacyDB =====
+            // Load fresh data from KHACH_HANG if user exists in DB
+            if (typeof PharmacyDB !== 'undefined') {
+                const khachHang = PharmacyDB.findOne('KHACH_HANG', { email: currentUser.email });
+                if (khachHang) {
+                    currentUser.ma_khach_hang = khachHang.ma_khach_hang;
+                    currentUser.fullname = khachHang.ho_ten;
+                    currentUser.phone = khachHang.so_dien_thoai || currentUser.phone || '';
+                    currentUser.address = khachHang.dia_chi || currentUser.address || '';
+                    currentUser.dob = khachHang.ngay_sinh || currentUser.dob || '';
+                    currentUser.gender = khachHang.gioi_tinh || currentUser.gender || '';
+                    localStorage.setItem('medicare_current_user', JSON.stringify(currentUser));
+                }
+            }
+
             function renderUserInfo() {
                 // Sidebar
                 const firstName = currentUser.fullname.split(' ').pop();
@@ -763,12 +783,14 @@
                 }
                 
                 document.getElementById('info-gender').textContent = currentUser.gender || 'Chưa cập nhật';
+                document.getElementById('info-address').textContent = currentUser.address || 'Chưa cập nhật';
 
                 // Pre-fill Edit form
                 document.getElementById('edit-fullname').value = currentUser.fullname;
                 document.getElementById('edit-phone').value = currentUser.phone || '';
                 document.getElementById('edit-dob').value = currentUser.dob || '';
                 document.getElementById('edit-gender').value = currentUser.gender || 'Nam';
+                document.getElementById('edit-address').value = currentUser.address || '';
 
                 // Disable password change for social logins
                 const btnChangePwd = document.getElementById('btn-change-password');
@@ -801,6 +823,7 @@
                 currentUser.phone = document.getElementById('edit-phone').value.trim();
                 currentUser.dob = document.getElementById('edit-dob').value;
                 currentUser.gender = document.getElementById('edit-gender').value;
+                currentUser.address = document.getElementById('edit-address').value.trim();
 
                 // Refresh avatar if name changed and using ui-avatars
                 if (!currentUser.provider || currentUser.provider === 'email') {
@@ -816,6 +839,11 @@
                 if (uIndex > -1) {
                     users[uIndex] = { ...users[uIndex], ...currentUser };
                     saveUsers(users);
+                }
+
+                // Sync back to PharmacyDB (KHACH_HANG)
+                if (typeof PharmacyDB !== 'undefined') {
+                    PharmacyDB.syncProfileToKhachHang(currentUser);
                 }
 
                 renderUserInfo();

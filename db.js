@@ -186,11 +186,17 @@
                 let existingUsers = localStorage.getItem('medicare_users');
                 if (!existingUsers) {
                     const mappedUsers = SEED_DATA.KHACH_HANG.map(kh => ({
+                        ma_khach_hang: kh.ma_khach_hang,
                         fullname: kh.ho_ten,
                         email: kh.email,
                         password: kh.mat_khau,
+                        phone: kh.so_dien_thoai || '',
+                        address: kh.dia_chi || '',
+                        dob: kh.ngay_sinh || '',
+                        gender: kh.gioi_tinh || '',
                         provider: kh.google_id ? 'google' : kh.facebook_id ? 'facebook' : 'email',
-                        avatar: `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(kh.ho_ten)}`
+                        avatar: `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(kh.ho_ten)}`,
+                        createdAt: kh.ngay_tao
                     }));
                     localStorage.setItem('medicare_users', JSON.stringify(mappedUsers));
                 }
@@ -583,13 +589,42 @@
 
         _syncKhachHangToUsers(khachHangs) {
             const mappedUsers = khachHangs.map(kh => ({
+                ma_khach_hang: kh.ma_khach_hang,
                 fullname: kh.ho_ten,
                 email: kh.email,
                 password: kh.mat_khau,
+                phone: kh.so_dien_thoai || '',
+                address: kh.dia_chi || '',
+                dob: kh.ngay_sinh || '',
+                gender: kh.gioi_tinh || '',
                 provider: kh.google_id ? 'google' : kh.facebook_id ? 'facebook' : 'email',
-                avatar: `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(kh.ho_ten)}`
+                avatar: `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(kh.ho_ten)}`,
+                createdAt: kh.ngay_tao
             }));
             localStorage.setItem('medicare_users', JSON.stringify(mappedUsers));
+
+            // Also update medicare_current_user if logged in
+            const currentUser = JSON.parse(localStorage.getItem('medicare_current_user') || 'null');
+            if (currentUser) {
+                const updated = mappedUsers.find(u => u.email === currentUser.email);
+                if (updated) {
+                    localStorage.setItem('medicare_current_user', JSON.stringify({ ...currentUser, ...updated }));
+                }
+            }
+        }
+
+        // Sync profile edits back to KHACH_HANG
+        syncProfileToKhachHang(userData) {
+            const kh = this.findOne('KHACH_HANG', { email: userData.email });
+            if (kh) {
+                this.update('KHACH_HANG', { ma_khach_hang: kh.ma_khach_hang }, {
+                    ho_ten: userData.fullname,
+                    so_dien_thoai: userData.phone || '',
+                    dia_chi: userData.address || '',
+                    ngay_sinh: userData.dob || null,
+                    gioi_tinh: userData.gender || null
+                });
+            }
         }
 
         // ============================================================

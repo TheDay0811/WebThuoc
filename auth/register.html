@@ -79,6 +79,14 @@
                     <input type="email" id="reg-email" class="form-control" placeholder="Nhập địa chỉ email của bạn..." required>
                 </div>
 
+                <div class="form-group" id="phone-group">
+                    <label class="form-label" for="reg-phone">Số điện thoại</label>
+                    <div style="position:relative;">
+                        <i class="fa-solid fa-phone" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:#9ca3af; font-size:14px;"></i>
+                        <input type="tel" id="reg-phone" class="form-control" placeholder="Ví dụ: 0912345678" style="padding-left:40px;" required>
+                    </div>
+                </div>
+
                 <div class="form-group" id="password-group">
                     <label class="form-label" for="reg-password">Mật khẩu</label>
                     <div class="password-wrapper">
@@ -154,6 +162,8 @@
         const labelName = document.getElementById('label-name');
         const labelEmail = document.getElementById('label-email');
         const nameInput = document.getElementById('fullname');
+        const phoneInput = document.getElementById('reg-phone');
+        const phoneGroup = document.getElementById('phone-group');
         const emailInput = document.getElementById('reg-email');
         const passwordGroup = document.getElementById('password-group');
         const confirmGroup = document.getElementById('confirm-group');
@@ -260,10 +270,18 @@
 
             const fullname = nameInput.value.trim();
             const email = emailInput.value.trim();
+            const phone = phoneInput.value.trim();
             const agree = document.getElementById('agree-terms').checked;
 
-            if (!fullname || !email) {
+            if (!fullname || !email || !phone) {
                 showToast('Vui lòng điền đầy đủ thông tin!', 'error');
+                return;
+            }
+
+            // Validate phone number (Vietnamese format: 10 digits starting with 0)
+            const phoneRegex = /^0\d{9}$/;
+            if (!phoneRegex.test(phone)) {
+                showToast('Số điện thoại không hợp lệ! (VD: 0912345678)', 'error');
                 return;
             }
             if (!agree) {
@@ -301,6 +319,7 @@
             users.push({
                 fullname,
                 email,
+                phone,
                 password,
                 provider: currentProvider,
                 avatar: currentProvider !== 'email'

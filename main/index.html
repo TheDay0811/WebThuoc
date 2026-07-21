@@ -1564,17 +1564,29 @@
                         <div class="qv-tab active" data-target="qv-uses">Công dụng</div>
                         <div class="qv-tab" data-target="qv-dosage">Liều dùng</div>
                         <div class="qv-tab" data-target="qv-ingredients">Thành phần</div>
+                        <div class="qv-tab" data-target="qv-expiry">Hạn sử dụng</div>
                     </div>
 
                     <div class="qv-tab-content active" id="qv-uses">...</div>
                     <div class="qv-tab-content" id="qv-dosage">...</div>
                     <div class="qv-tab-content" id="qv-ingredients">...</div>
+                    <div class="qv-tab-content" id="qv-expiry">
+                        <div style="display:flex; align-items:center; gap:10px; padding:8px 0;">
+                            <i class="fa-regular fa-calendar-check" style="font-size:18px; color:#0d6efd;"></i>
+                            <div>
+                                <div style="font-size:13px; color:#6b7280; margin-bottom:2px;">Hạn sử dụng</div>
+                                <div id="qv-expiry-date" style="font-size:15px; font-weight:600; color:#1f2937;">Chưa cập nhật</div>
+                            </div>
+                        </div>
+                        <div id="qv-expiry-status" style="margin-top:8px; font-size:13px; padding:8px 12px; border-radius:8px;"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Quick View Script -->
+    <script src="../db.js"></script>
     <script>
         (function () {
             const productDatabase = {
@@ -1653,6 +1665,47 @@
                     document.getElementById('qv-uses').textContent = details.uses;
                     document.getElementById('qv-dosage').textContent = details.dosage;
                     document.getElementById('qv-ingredients').textContent = details.ingredients;
+
+                    // Expiry date - try to get from PharmacyDB
+                    let expiryDate = null;
+                    if (typeof PharmacyDB !== 'undefined') {
+                        const allMeds = PharmacyDB.get('THUOC');
+                        const matched = allMeds.find(m => m.ten_thuoc.toLowerCase().trim() === key);
+                        if (matched && matched.han_su_dung) {
+                            expiryDate = matched.han_su_dung;
+                        }
+                    }
+
+                    const expiryEl = document.getElementById('qv-expiry-date');
+                    const expiryStatusEl = document.getElementById('qv-expiry-status');
+
+                    if (expiryDate) {
+                        const d = new Date(expiryDate);
+                        const formatted = d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                        expiryEl.textContent = formatted;
+
+                        const now = new Date();
+                        const diffMs = d - now;
+                        const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+                        if (diffDays <= 0) {
+                            expiryStatusEl.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Sản phẩm đã hết hạn sử dụng';
+                            expiryStatusEl.style.background = '#fef2f2';
+                            expiryStatusEl.style.color = '#dc2626';
+                        } else if (diffDays <= 90) {
+                            expiryStatusEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Sắp hết hạn (còn ' + diffDays + ' ngày)';
+                            expiryStatusEl.style.background = '#fffbeb';
+                            expiryStatusEl.style.color = '#d97706';
+                        } else {
+                            expiryStatusEl.innerHTML = '<i class="fa-solid fa-circle-check"></i> Còn hạn sử dụng (còn ' + diffDays + ' ngày)';
+                            expiryStatusEl.style.background = '#f0fdf4';
+                            expiryStatusEl.style.color = '#16a34a';
+                        }
+                    } else {
+                        expiryEl.textContent = 'Chưa cập nhật';
+                        expiryStatusEl.innerHTML = '';
+                        expiryStatusEl.style.background = 'transparent';
+                    }
 
                     // Store data for cart button inside modal
                     const btnCart = document.getElementById('qv-btn-cart');
