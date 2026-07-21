@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seed Firestore - Medicare</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            padding: 20px;
+            background: #f0f2f5;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            width: 100%;
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #1a1a2e;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h1 small {
+            font-size: 14px;
+            font-weight: 400;
+            color: #6c757d;
+        }
+
+        .auth-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .auth-section label {
+            font-weight: 600;
+            min-width: 80px;
+        }
+
+        .auth-section input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px 14px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .auth-section button {
+            padding: 10px 24px;
+            background: #0d6efd;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .auth-section button:hover {
+            background: #0b5ed7;
+        }
+
+        .auth-section .status {
+            font-size: 14px;
+            padding: 6px 14px;
+            border-radius: 20px;
+        }
+
+        .status.success {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .status.info {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .btn-seed {
+            padding: 14px 32px;
+            background: #198754;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+
+        .btn-seed:hover {
+            background: #157347;
+        }
+
+        .btn-seed:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .log {
+            background: #1e1e2f;
+            color: #cdd6f4;
+            padding: 20px;
+            border-radius: 12px;
+            max-height: 500px;
+            overflow-y: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-top: 20px;
+        }
+
+        .log .time {
+            color: #6c7086;
+        }
+
+        .log .success {
+            color: #a6e3a1;
+        }
+
+        .log .error {
+            color: #f38ba8;
+        }
+
+        .log .info {
+            color: #89b4fa;
+        }
+
+        .progress {
+            width: 100%;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 4px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: #198754;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🚀 Đẩy dữ liệu mẫu lên Firestore <small>(Firestore Seed)</small></h1>
+        <p>Dùng file này để import toàn bộ dữ liệu mẫu từ <code>db.js</code> vào Firestore.</p>
+
+        <!-- Phần đăng nhập -->
+        <div class="auth-section" id="auth-section">
+            <label>🔐 Tài khoản</label>
+            <input type="email" id="email-input" value="admin@medicare.vn" placeholder="Email">
+            <input type="password" id="password-input" value="admin123" placeholder="Mật khẩu">
+            <button id="login-btn">Đăng nhập</button>
+            <span id="auth-status" class="status info">Chưa đăng nhập</span>
+        </div>
+
+        <button class="btn-seed" id="seed-btn" disabled>📤 Bắt đầu seed</button>
+        <div class="progress">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <div class="log" id="log">📋 Nhật ký sẽ hiện tại đây...</div>
+    </div>
+
+    <!-- Import Map -->
+    <script type="importmap">
+{
+    "imports": {
+        "firebase-app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+        "firebase-auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
+        "firebase-firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
+    }
+}
+</script>
+
+    <script type="module">
+        // ===== Import Firebase =====
+        import { auth, db, signInWithEmailAndPassword, onAuthStateChanged } from './firebase-config.js';
+        import { collection, doc, setDoc, getDocs, query, limit, writeBatch } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // ===== Import SEED_DATA từ db.js =====
+        // Đảm bảo file db.js đã export SEED_DATA
+        import { SEED_DATA } from './db.js';
+
+        // ===== DOM =====
+        const logDiv = document.getElementById('log');
+        const progressBar = document.getElementById('progress-bar');
+        const seedBtn = document.getElementById('seed-btn');
+        const loginBtn = document.getElementById('login-btn');
+        const emailInput = document.getElementById('email-input');
+        const passInput = document.getElementById('password-input');
+        const authStatus = document.getElementById('auth-status');
+
+        // ===== LOGGING =====
+        function log(msg, type = 'info') {
+            const time = new Date().toLocaleTimeString();
+            const cls = type === 'success' ? 'success' : type === 'error' ? 'error' : 'info';
+            logDiv.innerHTML += `<div><span class="time">[${time}]</span> <span class="${cls}">${msg}</span></div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function updateProgress(percent) {
+            progressBar.style.width = Math.min(100, percent) + '%';
+        }
+
+        // ===== AUTH =====
+        let currentUser = null;
+
+        async function login(email, password) {
+            try {
+                authStatus.textContent = '⏳ Đang đăng nhập...';
+                authStatus.className = 'status info';
+                const cred = await signInWithEmailAndPassword(auth, email, password);
+                currentUser = cred.user;
+                authStatus.textContent = '✅ Đã đăng nhập: ' + currentUser.email;
+                authStatus.className = 'status success';
+                seedBtn.disabled = false;
+                log('✅ Đăng nhập thành công!', 'success');
+                return true;
+            } catch (error) {
+                authStatus.textContent = '❌ ' + error.message;
+                authStatus.className = 'status error';
+                log('❌ Đăng nhập thất bại: ' + error.message, 'error');
+                seedBtn.disabled = true;
+                return false;
+            }
+        }
+
+        loginBtn.addEventListener('click', async () => {
+            await login(emailInput.value, passInput.value);
+        });
+
+        // Tự động đăng nhập nếu đã có session
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                authStatus.textContent = '✅ Đã đăng nhập: ' + user.email;
+                authStatus.className = 'status success';
+                seedBtn.disabled = false;
+                log('✅ Tự động đăng nhập thành công!', 'success');
+            } else {
+                // Thử đăng nhập tự động bằng admin mặc định
+                await login(emailInput.value, passInput.value);
+            }
+        });
+
+        // ===== SEED FUNCTION (dùng batch để tối ưu) =====
+        async function seedDatabase() {
+            if (!currentUser) {
+                log('❌ Bạn cần đăng nhập trước!', 'error');
+                return;
+            }
+
+            seedBtn.disabled = true;
+            seedBtn.textContent = '⏳ Đang seed...';
+            log('🚀 Bắt đầu quá trình seed dữ liệu...');
+            updateProgress(0);
+
+            try {
+                // Kiểm tra dữ liệu đã tồn tại chưa (tùy chọn)
+                const checkSnap = await getDocs(query(collection(db, 'KHACH_HANG'), limit(1)));
+                if (!checkSnap.empty) {
+                    const confirmSeed = confirm('⚠️ Dữ liệu đã tồn tại trong Firestore. Bạn có muốn ghi đè không?');
+                    if (!confirmSeed) {
+                        log('⏹️ Đã hủy seed.', 'warning');
+                        seedBtn.textContent = '📤 Bắt đầu seed';
+                        seedBtn.disabled = false;
+                        return;
+                    }
+                }
+
+                const tables = Object.keys(SEED_DATA);
+                let totalRecords = 0;
+                let processed = 0;
+
+                // Đếm tổng số bản ghi
+                for (const t of tables) {
+                    if (Array.isArray(SEED_DATA[t])) totalRecords += SEED_DATA[t].length;
+                }
+                if (totalRecords === 0) {
+                    log('⚠️ Không có dữ liệu để seed.', 'warning');
+                    seedBtn.textContent = '📤 Bắt đầu seed';
+                    seedBtn.disabled = false;
+                    return;
+                }
+                log(`📦 Tìm thấy ${totalRecords} bản ghi trong ${tables.length} collection.`, 'info');
+
+                // Map khóa chính
+                const pkMap = {
+                    KHACH_HANG: 'ma_khach_hang',
+                    QUAN_LY: 'ma_quan_ly',
+                    NHAN_VIEN: 'ma_nhan_vien',
+                    DANH_MUC: 'ma_danh_muc',
+                    THUOC: 'ma_thuoc',
+                    GIO_HANG: 'ma_gio_hang',
+                    CHI_TIET_GIO_HANG: 'ma_chi_tiet',
+                    KHUYEN_MAI: 'ma_khuyen_mai',
+                    DON_HANG: 'ma_don_hang',
+                    CHI_TIET_DON_HANG: 'ma_chi_tiet',
+                    THANH_TOAN: 'ma_thanh_toan',
+                    HOA_DON: 'ma_hoa_don',
+                    DANH_GIA: 'ma_danh_gia',
+                    DANH_GIA_NHAN_VIEN: 'ma_danh_gia_nv',
+                    TIN_NHAN: 'ma_tin_nhan',
+                    PHAN_CONG: 'ma_phan_cong',
+                    CHAM_CONG: 'ma_cham_cong',
+                    BANG_LUONG: 'ma_bang_luong',
+                    OTP: 'ma_otp'
+                };
+
+                // Duyệt từng collection
+                for (const tableName of tables) {
+                    const rows = SEED_DATA[tableName];
+                    if (!rows || rows.length === 0) continue;
+
+                    const pk = pkMap[tableName] || 'id';
+                    const colRef = collection(db, tableName);
+
+                    log(`📂 Đang seed "${tableName}" (${rows.length} bản ghi)...`, 'info');
+
+                    // Dùng batch để tối ưu
+                    let batch = writeBatch(db);
+                    let batchCount = 0;
+                    const BATCH_SIZE = 400;
+
+                    for (const row of rows) {
+                        const docId = row[pk] ? row[pk].toString() : null;
+                        let docRef;
+                        if (docId) {
+                            docRef = doc(db, tableName, docId);
+                        } else {
+                            docRef = doc(colRef); // tự tạo ID
+                        }
+                        batch.set(docRef, row);
+                        batchCount++;
+                        processed++;
+
+                        if (batchCount >= BATCH_SIZE) {
+                            await batch.commit();
+                            batch = writeBatch(db);
+                            batchCount = 0;
+                            const pct = Math.round((processed / totalRecords) * 100);
+                            updateProgress(pct);
+                            log(`   Đã xử lý ${processed}/${totalRecords} (${pct}%)`, 'info');
+                        }
+                    }
+
+                    // Commit batch cuối
+                    if (batchCount > 0) {
+                        await batch.commit();
+                    }
+
+                    log(`✅ Collection "${tableName}" đã được seed (${rows.length} bản ghi).`, 'success');
+                    updateProgress(Math.round((processed / totalRecords) * 100));
+                }
+
+                updateProgress(100);
+                log(`🎉 HOÀN THÀNH! Đã seed ${totalRecords} bản ghi thành công.`, 'success');
+                log('📋 Kiểm tra trên Firebase Console để xem dữ liệu.', 'info');
+
+            } catch (error) {
+                log(`❌ LỖI: ${error.message}`, 'error');
+                console.error(error);
+            } finally {
+                seedBtn.innerHTML = '✅ Đã seed';
+                seedBtn.disabled = false;
+            }
+        }
+
+        seedBtn.addEventListener('click', seedDatabase);
+
+        // ===== KIỂM TRA DỮ LIỆU ĐÃ TỒN TẠI =====
+        (async function checkExisting() {
+            try {
+                const q = query(collection(db, 'KHACH_HANG'), limit(1));
+                const snap = await getDocs(q);
+                if (!snap.empty) {
+                    log('ℹ️ Dữ liệu đã tồn tại trong Firestore. Seed sẽ ghi đè nếu cùng ID.', 'warning');
+                }
+            } catch (e) {
+                // Bỏ qua lỗi nếu chưa đăng nhập
+            }
+        })();
+    </script>
+</body>
+
+</html>

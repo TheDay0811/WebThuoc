@@ -1,0 +1,124 @@
+mutation CreateUserData @auth(level: USER) {
+  user_insert(data: {id_expr: "auth.uid", email: "user@example.com", username: "newuser"})
+}
+
+mutation CreateWorkspaceData @auth(level: USER) {
+  workspace_insert(data: {name: "My Workspace"})
+}
+
+mutation CreateProjectData($workspaceId: UUID!, $title: String!) @auth(level: USER) {
+  project_insert(data: {title: $title, workspaceId: $workspaceId})
+}
+
+mutation CreateTaskData($projectId: UUID!, $creatorId: UUID!, $title: String!, $status: String!) @auth(level: USER) {
+  task_insert(data: {title: $title, status: $status, projectId: $projectId, creatorId: $creatorId})
+}
+
+mutation CreateCommentData($taskId: UUID!, $authorId: UUID!, $content: String!) @auth(level: USER) {
+  comment_insert(data: {content: $content, taskId: $taskId, authorId: $authorId})
+}
+
+mutation UpdateUser($email: String!) @auth(level: USER) {
+  user_update(key: {id_expr: "auth.uid"}, data: {email: $email})
+}
+
+mutation UpdateWorkspace($id: UUID!, $name: String!) @auth(level: USER) {
+  workspace_update(key: {id: $id}, data: {name: $name})
+}
+
+mutation UpdateProject($id: UUID!, $title: String!) @auth(level: USER) {
+  project_update(key: {id: $id}, data: {title: $title})
+}
+
+mutation UpdateTask($id: UUID!, $status: String!) @auth(level: USER) {
+  task_update(key: {id: $id}, data: {status: $status})
+}
+
+mutation UpdateComment($id: UUID!, $content: String!) @auth(level: USER) {
+  comment_update(key: {id: $id}, data: {content: $content})
+}
+
+mutation DeleteUser @auth(level: USER) {
+  user_delete(key: {id_expr: "auth.uid"})
+}
+
+mutation DeleteWorkspace($id: UUID!) @auth(level: USER) {
+  workspace_delete(key: {id: $id})
+}
+
+mutation DeleteProject($id: UUID!) @auth(level: USER) {
+  project_delete(key: {id: $id})
+}
+
+mutation DeleteTask($id: UUID!) @auth(level: USER) {
+  task_delete(key: {id: $id})
+}
+
+mutation DeleteComment($id: UUID!) @auth(level: USER) {
+  comment_delete(key: {id: $id})
+}
+
+query GetUserData @auth(level: USER) {
+  user(key: {id_expr: "auth.uid"}) {
+    email
+    username
+  }
+}
+
+query GetWorkspace($id: UUID!) @auth(level: USER) {
+  workspace(id: $id) {
+    name
+    description
+  }
+}
+
+query GetProject($id: UUID!) @auth(level: USER) {
+  project(id: $id) {
+    title
+    dueDate
+  }
+}
+
+query GetTask($id: UUID!) @auth(level: USER) {
+  task(id: $id) {
+    title
+    status
+  }
+}
+
+query GetComment($id: UUID!) @auth(level: USER) {
+  comment(id: $id) {
+    content
+  }
+}
+
+query ListUsers @auth(level: PUBLIC, insecureReason: "Public list of usernames for discovery.") {
+  users {
+    username
+  }
+}
+
+query ListWorkspaces @auth(level: USER) {
+  workspaces {
+    name
+  }
+}
+
+query ListProjects @auth(level: USER) {
+  projects {
+    title
+  }
+}
+
+query ListTasks @auth(level: USER) {
+  tasks {
+    title
+    status
+  }
+}
+
+query ListComments @auth(level: USER) {
+  comments {
+    content
+  }
+}
